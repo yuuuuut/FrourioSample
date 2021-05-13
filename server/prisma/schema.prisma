@@ -1,0 +1,48 @@
+datasource db {
+  provider = "mysql"
+  url      = env("API_DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  @@map(name: "users")
+  id           String @id
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  displayName  String
+  photoUrl     String
+  todos        Todo[]
+  profile      Profile?
+  followed     User[] @relation("relationships", references: [id])
+  following    User[] @relation("relationships", references: [id])
+}
+
+model Todo {
+  @@map(name: "todos")
+  id    Int  @id @default(autoincrement())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  title      String
+  done       Boolean @default(false)
+  user       User @relation(fields: [userId], references: [id])
+  userId     String
+  categories Category[]  @relation(references: [id])
+}
+
+model Profile {
+  @@map(name: "profiles")
+  id     Int @id @default(autoincrement())
+  bio    String?
+  user   User @relation(fields: [userId], references: [id])
+  userId String
+}
+
+model Category {
+  @@map(name: "categories")
+  id    Int     @id @default(autoincrement())
+  name  String
+  todos Todo[]  @relation(references: [id])
+}
