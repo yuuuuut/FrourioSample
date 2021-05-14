@@ -5,6 +5,8 @@ import styles from '~/styles/Home.module.css'
 import { apiClient } from '~/utils/apiClient'
 import UserBanner from '~/components/UserBanner'
 
+import firebase from '~/utils/firebase'
+
 import type { FormEvent, ChangeEvent } from 'react'
 
 const Home = () => {
@@ -14,6 +16,49 @@ const Home = () => {
     (e: ChangeEvent<HTMLInputElement>) => setLabel(e.target.value),
     []
   )
+
+  /**
+   * Google Login
+   */
+  const login = useCallback(async () => {
+    const provider = new firebase.auth.GoogleAuthProvider()
+
+    await firebase
+      .auth()
+      .signInWithPopup(provider)
+      .then(async (data) => {
+        console.log(data)
+        /*
+        const token = await firebase.auth().currentUser?.getIdToken(true)
+        console.log(token)
+        if (token) {
+          localStorage.setItem('@token', token)
+        }
+
+        console.log(data.user)
+        const id = data.user?.uid as string
+        const name = data.user?.displayName as string
+
+        await apiClient.user.$post({ body: { id, name } })
+        */
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+  }, [])
+
+  /**
+   * GoogleAuth SignOut
+   */
+  const logout = useCallback(async () => {
+    firebase
+      .auth()
+      .signOut()
+      .then(() => {
+        console.log('Logout')
+        localStorage.removeItem('@token')
+      })
+  }, [])
 
   /*
   const createTask = useCallback(
@@ -58,18 +103,10 @@ const Home = () => {
         </h1>
 
         <p className={styles.description}>frourio-todo-app</p>
-      </main>
 
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <img src="/vercel.svg" alt="Vercel Logo" className={styles.logo} />
-        </a>
-      </footer>
+        <button onClick={login}>Login</button>
+        <button onClick={logout}>Logout</button>
+      </main>
     </div>
   )
 }
