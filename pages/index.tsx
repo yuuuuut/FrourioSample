@@ -5,6 +5,8 @@ import styles from '~/styles/Home.module.css'
 import { apiClient } from '~/utils/apiClient'
 import UserBanner from '~/components/UserBanner'
 
+import firebase from '~/utils/firebase'
+
 import type { FormEvent, ChangeEvent } from 'react'
 
 const Home = () => {
@@ -14,6 +16,58 @@ const Home = () => {
     (e: ChangeEvent<HTMLInputElement>) => setLabel(e.target.value),
     []
   )
+
+  /**
+   * Google Login
+   */
+  const login = useCallback(async () => {
+    const provider = new firebase.auth.GoogleAuthProvider()
+
+    try {
+      const data = await firebase.auth().signInWithPopup(provider)
+      if (!data.user) {
+        console.log('none user data')
+        return
+      }
+
+      const body = {
+        id: data.user.uid,
+        displayName: data.user.displayName || '',
+        photoUrl: data.user.photoURL || ''
+      }
+
+      const user = await apiClient.user.post({ body })
+      console.log(user)
+    } catch (err) {
+      console.log(err)
+    }
+    /*
+        const token = await firebase.auth().currentUser?.getIdToken(true)
+        console.log(token)
+        if (token) {
+          localStorage.setItem('@token', token)
+        }
+
+        console.log(data.user)
+        const id = data.user?.uid as string
+        const name = data.user?.displayName as string
+
+        await apiClient.user.$post({ body: { id, name } })
+        */
+  }, [])
+
+  /**
+   * GoogleAuth SignOut
+   */
+  const logout = useCallback(async () => {
+    firebase
+      .auth()
+      .signOut()
+      .then(() => {
+        console.log('Logout')
+        localStorage.removeItem('@token')
+      })
+  }, [])
 
   /*
   const createTask = useCallback(
@@ -58,18 +112,10 @@ const Home = () => {
         </h1>
 
         <p className={styles.description}>frourio-todo-app</p>
-      </main>
 
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <img src="/vercel.svg" alt="Vercel Logo" className={styles.logo} />
-        </a>
-      </footer>
+        <button onClick={login}>Login</button>
+        <button onClick={logout}>Logout</button>
+      </main>
     </div>
   )
 }
