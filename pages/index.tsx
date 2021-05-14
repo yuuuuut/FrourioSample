@@ -23,12 +23,25 @@ const Home = () => {
   const login = useCallback(async () => {
     const provider = new firebase.auth.GoogleAuthProvider()
 
-    await firebase
-      .auth()
-      .signInWithPopup(provider)
-      .then(async (data) => {
-        console.log(data)
-        /*
+    try {
+      const data = await firebase.auth().signInWithPopup(provider)
+      if (!data.user) {
+        console.log('none user data')
+        return
+      }
+
+      const body = {
+        id: data.user.uid,
+        displayName: data.user.displayName || '',
+        photoUrl: data.user.photoURL || ''
+      }
+
+      const user = await apiClient.user.post({ body })
+      console.log(user)
+    } catch (err) {
+      console.log(err)
+    }
+    /*
         const token = await firebase.auth().currentUser?.getIdToken(true)
         console.log(token)
         if (token) {
@@ -41,10 +54,6 @@ const Home = () => {
 
         await apiClient.user.$post({ body: { id, name } })
         */
-      })
-      .catch((err) => {
-        console.log(err)
-      })
   }, [])
 
   /**

@@ -22,7 +22,7 @@
     "start:client": "next start",
     "start:server": "npm start --prefix server",
     "pretest": "npm run generate",
-    "test": "jest",
+    "test": "jest --testPathIgnorePatterns common.ts",
     "pretypecheck": "npm run generate",
     "typecheck": "tsc --noEmit && tsc --noEmit -p server"
   },
