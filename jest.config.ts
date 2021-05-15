@@ -6,6 +6,7 @@ const config: { projects: Config.InitialOptions[] } = {
   projects: [
     {
       testPathIgnorePatterns: ['<rootDir>/server'],
+      testMatch: ['<rootDir>/test'],
       transform: {
         '^.+\\.tsx$': 'babel-jest',
         '^.+\\.ts$': 'ts-jest'
@@ -19,9 +20,11 @@ const config: { projects: Config.InitialOptions[] } = {
       }
     },
     {
+      clearMocks: true,
       preset: 'ts-jest',
       testEnvironment: 'node',
       testMatch: ['<rootDir>/server/test/**/*.ts'],
+      setupFilesAfterEnv: ['<rootDir>/server/test/common.ts'],
       moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, {
         prefix: '<rootDir>/'
       })

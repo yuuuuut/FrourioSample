@@ -1,9 +1,5 @@
+import prisma from '$/prisma/prisma'
 import { UserCreateBody } from '$/types'
-
-import { PrismaClient } from '@prisma/client'
-
-// prisma setting
-const prisma = new PrismaClient()
 
 /**
  * show
@@ -12,7 +8,8 @@ export const showUser = async (userId: string) => {
   const user = await prisma.user.findUnique({
     where: { id: userId }
   })
-  if (!user) throw Object.assign(new Error(), { status: 404 })
+  if (!user)
+    throw Object.assign(new Error('ユーザーが存在しません。'), { status: 404 })
 
   return user
 }

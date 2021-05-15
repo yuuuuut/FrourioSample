@@ -7,7 +7,7 @@ export default defineController(() => ({
       const user = await showUser(params.userId)
       return { status: 200, body: { user } }
     } catch (error) {
-      return { status: error.status || 500 }
+      return { status: error.status || 500, body: { error: error.message } }
     }
   }
 }))

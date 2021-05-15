@@ -18,7 +18,7 @@ const ShowUser = () => {
 
       setUserShow(res.body.user)
     } catch (err) {
-      console.log(err.response.status)
+      console.log(err.response)
     }
   }
 
