@@ -1,17 +1,44 @@
-import { createUser } from '$/service/user'
-import { UserCreateBody } from '$/types'
-import { PrismaClient } from '.prisma/client'
-
-// Prisma Setting
-const prisma = new PrismaClient()
+import prisma from '$/prisma/prisma'
+import { createUser, showUser } from '$/service/user'
+import { UserCreateBody, UserShow } from '$/types'
+import { PrismaClient, User } from '.prisma/client'
+import { prismaMock } from '../common'
 
 afterAll(async (done) => {
   await prisma.$disconnect()
   done()
 })
 
+describe('showUser() - unit', () => {
+  it('ユーザーが存在する場合、取得ができること。', async () => {
+    const user: UserShow = {
+      id: 'T',
+      displayName: 'TestUser',
+      photoUrl: 'TestPhoto',
+      createdAt: new Date(),
+      updatedAt: new Date()
+    }
+
+    prismaMock.user.findUnique.mockResolvedValue(user)
+
+    //prismaMock.user.findUnique.mockImplementation((async () => user) as any)
+
+    await expect(showUser(user.id)).resolves.toEqual({
+      ...user
+    })
+  })
+  it('ユーザーが存在しない場合、エラーが発生すること。', async () => {
+    prismaMock.user.findUnique.mockRejectedValue(
+      new Error('ユーザーが存在しません。')
+    )
+
+    await expect(showUser('None')).rejects.toThrow('ユーザーが存在しません。')
+  })
+})
+
 describe('createUser() - unit', () => {
   it('ユーザーの作成ができること', async () => {
+    /*
     const body: UserCreateBody = {
       id: 'Test',
       displayName: 'TestUser',
@@ -61,5 +88,6 @@ describe('createUser() - unit', () => {
     expect(savedAfterUser?.id).toEqual(afterbody.id)
     expect(savedAfterUser?.displayName).toEqual(afterbody.displayName)
     expect(savedAfterUser?.photoUrl).toEqual(afterbody.photoUrl)
+    */
   })
 })
