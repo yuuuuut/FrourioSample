@@ -6,7 +6,19 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 /**
- * create user
+ * show
+ */
+export const showUser = async (userId: string) => {
+  const user = await prisma.user.findUnique({
+    where: { id: userId }
+  })
+  if (!user) throw Object.assign(new Error(), { status: 404 })
+
+  return user
+}
+
+/**
+ * create
  */
 export const createUser = async (body: UserCreateBody) => {
   const { id, displayName, photoUrl } = body
