@@ -2,6 +2,18 @@ import prisma from '$/prisma/prisma'
 import { UserCreateBody } from '$/types'
 
 /**
+ * index
+ */
+export const indexUser = async (take: number, skip: number) => {
+  const users = await prisma.user.findMany({
+    take,
+    skip
+  })
+
+  return users
+}
+
+/**
  * show
  */
 export const showUser = async (userId: string) => {

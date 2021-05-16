@@ -3,7 +3,10 @@ import { User } from '.prisma/client'
 
 export type Methods = {
   get: {
-    resBody: string
+    query?: {
+      page: number
+    }
+    resBody: { users: User[] }
   }
   post: {
     reqBody: UserCreateBody
