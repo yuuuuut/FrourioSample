@@ -1,14 +1,18 @@
 import prisma from '$/prisma/prisma'
 import { createUser, showUser } from '$/service/user'
 import { UserCreateBody, UserShow } from '$/types'
-import { PrismaClient, User } from '.prisma/client'
-import { prismaMock } from '../common'
+import { resetDatabase } from '../common'
+
+afterEach(async () => {
+  await resetDatabase()
+})
 
 afterAll(async (done) => {
   await prisma.$disconnect()
   done()
 })
 
+/*
 describe('showUser() - unit', () => {
   it('ユーザーが存在する場合、取得ができること。', async () => {
     const user: UserShow = {
@@ -35,10 +39,10 @@ describe('showUser() - unit', () => {
     await expect(showUser('None')).rejects.toThrow('ユーザーが存在しません。')
   })
 })
+*/
 
 describe('createUser() - unit', () => {
   it('ユーザーの作成ができること', async () => {
-    /*
     const body: UserCreateBody = {
       id: 'Test',
       displayName: 'TestUser',
@@ -88,6 +92,5 @@ describe('createUser() - unit', () => {
     expect(savedAfterUser?.id).toEqual(afterbody.id)
     expect(savedAfterUser?.displayName).toEqual(afterbody.displayName)
     expect(savedAfterUser?.photoUrl).toEqual(afterbody.photoUrl)
-    */
   })
 })

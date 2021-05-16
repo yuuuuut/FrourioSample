@@ -1,15 +1,10 @@
-import { mockDeep, mockReset, MockProxy } from 'jest-mock-extended'
-import { PrismaClient } from '@prisma/client'
+import util from 'util'
 
-import prisma from '../prisma/prisma'
+jest.setTimeout(30000)
 
-jest.mock('../prisma/prisma', () => ({
-  __esModule: true,
-  default: mockDeep<PrismaClient>()
-}))
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const exec = util.promisify(require('child_process').exec)
 
-beforeEach(() => {
-  mockReset(prismaMock)
-})
-
-export const prismaMock = prisma as unknown as MockProxy<PrismaClient>
+export const resetDatabase = async () => {
+  await exec(`yarn migrate:reset`)
+}
