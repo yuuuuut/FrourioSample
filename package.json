@@ -17,6 +17,7 @@
     "lint": "eslint --ext .ts,.js,.tsx . && prettier --check \"./**/*.ts\"",
     "lint:fix": "eslint --ext .ts,.js,.tsx . --fix && prettier --write \"./**/*.ts\"",
     "migrate:dev": "npm run migrate:dev --prefix server",
+    "prisma:seed": "npm run prisma:seed --prefix server",
     "migrate:reset": "npm run migrate:reset --prefix server",
     "start": "run-p start:*",
     "start:client": "next start",

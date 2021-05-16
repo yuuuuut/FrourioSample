@@ -12,6 +12,7 @@
     "generate": "run-p generate:*",
     "generate:frourio": "frourio-express",
     "generate:prisma": "prisma generate",
+    "prisma:seed": "prisma db seed --preview-feature",
     "migrate:dev": "prisma migrate dev",
     "migrate:reset": "prisma migrate reset --force",
     "start": "cross-env NODE_ENV=production node index.js"

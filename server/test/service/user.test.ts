@@ -1,15 +1,33 @@
 import prisma from '$/prisma/prisma'
-import { createUser, showUser } from '$/service/user'
+import { createUser, indexUser, showUser } from '$/service/user'
 import { UserCreateBody, UserShow } from '$/types'
-import { resetDatabase } from '../common'
+import { resetDatabase, seedingDatabase } from '../common'
 
-afterEach(async () => {
+beforeEach(async () => {
   await resetDatabase()
 })
 
 afterAll(async (done) => {
+  await resetDatabase()
   await prisma.$disconnect()
   done()
+})
+
+describe('indexUser() - unit', () => {
+  it('takeが5 skipが0の場合、5人のユーザーを返すこと。', async () => {
+    // 9人のユーザーを作成
+    await seedingDatabase()
+    const users = await indexUser(5, 0)
+
+    expect(users.length).toBe(5)
+  })
+  it('takeが5 skipが5の場合、4人のユーザーを返すこと。', async () => {
+    // 9人のユーザーを作成
+    await seedingDatabase()
+    const users = await indexUser(5, 5)
+
+    expect(users.length).toBe(4)
+  })
 })
 
 /*
