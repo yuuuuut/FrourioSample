@@ -1,6 +1,8 @@
 import { PrismaClient } from '@prisma/client'
 import util from 'util'
 
+import prisma from '$/prisma/prisma'
+
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const exec = util.promisify(require('child_process').exec)
 
@@ -37,4 +39,19 @@ export const resetDatabase = async () => {
  */
 export const seedingDatabase = async () => {
   await exec(`yarn prisma:seed`)
+}
+
+/**
+ * TestUserデータを作成します。
+ */
+export const createTestUser = async (id: string) => {
+  const user = await prisma.user.create({
+    data: {
+      id,
+      displayName: 'TestUserName',
+      photoUrl: 'TestUserPhoto'
+    }
+  })
+
+  return user
 }
