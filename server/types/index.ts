@@ -1,6 +1,7 @@
-import { User } from '.prisma/client'
+import { Todo, User } from '.prisma/client'
 
 export type UserCreateBody = Pick<User, 'id' | 'displayName' | 'photoUrl'>
+export type TodoCreateBody = Pick<Todo, 'title' | 'userId'>
 
 export type UserShow = {
   id: string
