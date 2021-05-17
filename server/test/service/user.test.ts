@@ -1,7 +1,8 @@
 import prisma from '$/prisma/prisma'
+
 import { createUser, indexUser, showUser } from '$/service/user'
-import { UserCreateBody, UserShow } from '$/types'
 import { resetDatabase, seedingDatabase } from '../common'
+import { UserCreateBody } from '$/types'
 
 beforeEach(async () => {
   await resetDatabase()
@@ -30,7 +31,23 @@ describe('indexUser() - unit', () => {
   })
 })
 
+describe('showUser() - unit', () => {
+  it('ユーザーが存在する場合、取得できること。', async () => {
+    await seedingDatabase()
+    const userId = 'Test1'
+    const user = await showUser(userId)
+
+    expect(user.id).toEqual(userId)
+  })
+  it('ユーザーが存在しない場合、エラーが発生すること。', async () => {
+    await expect(showUser('None')).rejects.toEqual(
+      new Error('ユーザーが存在しません。')
+    )
+  })
+})
+
 /*
+Mock Version
 describe('showUser() - unit', () => {
   it('ユーザーが存在する場合、取得ができること。', async () => {
     const user: UserShow = {
