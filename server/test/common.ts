@@ -1,6 +1,6 @@
-import { PrismaClient } from '@prisma/client'
 import util from 'util'
 
+import { PrismaClient, User } from '@prisma/client'
 import prisma from '$/prisma/prisma'
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -54,4 +54,18 @@ export const createTestUser = async (id: string) => {
   })
 
   return user
+}
+
+/**
+ * TestTodoデータを作成します。
+ */
+export const createTestTodo = async (user: User) => {
+  const todo = await prisma.todo.create({
+    data: {
+      title: 'TestTitle',
+      userId: user.id
+    }
+  })
+
+  return todo
 }

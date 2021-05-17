@@ -1,7 +1,7 @@
 import prisma from '$/prisma/prisma'
 
-import { createTodo } from '$/service/todo'
-import { createTestUser, resetDatabase } from '../common'
+import { createTodo, updateTodo } from '$/service/todo'
+import { createTestTodo, createTestUser, resetDatabase } from '../common'
 import { TodoCreateBody } from '$/types'
 
 beforeEach(async () => {
@@ -28,5 +28,18 @@ describe('createTodo() - unit', () => {
     expect(todo.title).toBe(data.title)
     expect(todo.done).toBe(false)
     expect(todo.userId).toBe(user.id)
+  })
+})
+
+describe('updateTodo() - unit', () => {
+  it('todoの更新ができること。', async () => {
+    const user = await createTestUser('TestUser')
+    const todo = await createTestTodo(user)
+
+    const afterTodo = await updateTodo(todo.id)
+
+    expect(afterTodo.id).toBe(todo.id)
+    expect(afterTodo.done).toBe(true)
+    expect(afterTodo.userId).toBe(todo.userId)
   })
 })

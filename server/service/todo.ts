@@ -16,3 +16,17 @@ export const createTodo = async (body: TodoCreateBody) => {
 
   return todo
 }
+
+/**
+ * update
+ */
+export const updateTodo = async (id: number) => {
+  const todo = await prisma.todo.update({
+    where: { id },
+    data: {
+      done: true
+    }
+  })
+
+  return todo
+}
