@@ -1,5 +1,8 @@
 import { TodoCreateBody } from '$/types'
 import prisma from '$/prisma/prisma'
+import { createCanvas, loadImage } from 'canvas'
+import fs from 'fs'
+import firebase from '$/utils/firebase'
 
 /**
  * create
@@ -37,4 +40,75 @@ export const updateTodo = async (id: number) => {
       throw Object.assign(new Error(e), { status: 500 })
     }
   }
+}
+
+/**
+ * create ogp
+ */
+export const createOgp = async () => {
+  const localTargetPath = __dirname + '/static/image/ogp.png'
+  const localBasePath = __dirname + '/static/image/haikei.png'
+  const fbTargetPath = 'ogps/4.png'
+  const fbBasePath = 'ogp/haikei.png'
+
+  try {
+    const bucket = firebase.storage().bucket()
+
+    // Base Image DonwLoad
+    await bucket.file(fbBasePath).download({ destination: localBasePath })
+
+    const canvas = await settingCanvas(localBasePath)
+
+    const buf = canvas.toBuffer()
+    fs.writeFileSync(localTargetPath, buf)
+
+    await bucket.upload(localTargetPath, {
+      destination: fbTargetPath,
+      metadata: {
+        metadata: {
+          firebaseStorageDownloadTokens: 'a'
+        }
+      }
+    })
+  } finally {
+    fs.unlinkSync(localBasePath)
+    fs.unlinkSync(localTargetPath)
+  }
+}
+
+/**
+ * Canvasの設定をしてcanvasを返します。
+ */
+const settingCanvas = async (localBasePath: string) => {
+  // Canvas Setting
+  const canvas = createCanvas(640, 480)
+  const ctx = canvas.getContext('2d')
+
+  // ベース画像の描画
+  const baseImage = await loadImage(localBasePath)
+  ctx.drawImage(baseImage, 0, 0, 640, 480)
+
+  const defaultFont = "bold 30px 'ＭＳ 明朝'"
+
+  ctx.textBaseline = 'top'
+  ctx.textAlign = 'center'
+
+  // 20文字制限
+  ctx.font = "bold 45px 'ＭＳ 明朝'"
+  ctx.fillStyle = 'red'
+  ctx.fillText('部屋の掃除', 320, 130)
+
+  ctx.font = defaultFont
+  ctx.fillStyle = 'black'
+  ctx.fillText('を期日までに終わらせられなかったです。', 325, 200)
+
+  ctx.font = "bold 50px 'ＭＳ 明朝'"
+  ctx.fillText('次は!!!', 325, 240)
+
+  ctx.font = defaultFont
+  ctx.fillText('きちんと決めた期日までにやり遂げます。', 325, 300)
+
+  console.log(canvas.type)
+
+  return canvas
 }

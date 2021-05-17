@@ -1,5 +1,6 @@
 import prisma from '$/prisma/prisma'
 import { UserCreateBody } from '$/types'
+import { createOgp } from './todo'
 
 /**
  * index
@@ -17,6 +18,8 @@ export const indexUser = async (take: number, skip: number) => {
  * show
  */
 export const showUser = async (userId: string) => {
+  await createOgp()
+
   const user = await prisma.user.findUnique({
     where: { id: userId }
   })
