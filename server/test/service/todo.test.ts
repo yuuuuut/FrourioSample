@@ -42,4 +42,9 @@ describe('updateTodo() - unit', () => {
     expect(afterTodo.done).toBe(true)
     expect(afterTodo.userId).toBe(todo.userId)
   })
+  it('todoが存在しない場合、正しいエラーが発生すること。', async () => {
+    await expect(updateTodo(0)).rejects.toEqual(
+      new Error('Todoが存在しません。')
+    )
+  })
 })
