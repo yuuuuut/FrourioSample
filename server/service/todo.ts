@@ -8,11 +8,12 @@ import firebase from '$/utils/firebase'
  * create
  */
 export const createTodo = async (body: TodoCreateBody) => {
-  const { title, userId } = body
+  const { title, due_date, userId } = body
 
   const todo = await prisma.todo.create({
     data: {
       title,
+      due_date,
       userId
     }
   })

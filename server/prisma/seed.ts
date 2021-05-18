@@ -1,5 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { PrismaClient } = require('@prisma/client')
+
 const prisma = new PrismaClient()
 
 const main = async () => {
@@ -15,6 +16,20 @@ const main = async () => {
       { id: 'Test8', displayName: 'TestName8', photoUrl: 'TestPhoto8' },
       { id: 'Test9', displayName: 'TestName9', photoUrl: 'TestPhoto9' }
     ]
+  })
+
+  await prisma.user.create({
+    data: {
+      id: 'Test',
+      displayName: 'TestName',
+      photoUrl: 'TestPhoto',
+      todos: {
+        create: {
+          title: 'TestTitle',
+          due_date: new Date()
+        }
+      }
+    }
   })
 }
 
