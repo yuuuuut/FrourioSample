@@ -21,6 +21,7 @@ describe('createTodo() - unit', () => {
 
     const data: TodoCreateBody = {
       title: 'TestTodo',
+      due_date: new Date(),
       userId: user.id
     }
 

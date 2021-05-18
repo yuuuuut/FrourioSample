@@ -63,6 +63,7 @@ export const createTestTodo = async (user: User) => {
   const todo = await prisma.todo.create({
     data: {
       title: 'TestTitle',
+      due_date: new Date(),
       userId: user.id
     }
   })
