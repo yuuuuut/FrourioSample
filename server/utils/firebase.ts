@@ -4,7 +4,8 @@ import firebase from 'firebase-admin'
 const credentials = require('../credentials.json')
 
 firebase.initializeApp({
-  credential: firebase.credential.cert(credentials)
+  credential: firebase.credential.cert(credentials),
+  storageBucket: 'frouriotest.appspot.com'
 })
 
 export default firebase
