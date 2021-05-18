@@ -32,6 +32,8 @@ export const updateTodo = async (id: number) => {
       }
     })
 
+    await createOgp(todo.id, true)
+
     return todo
   } catch (e) {
     if (e.code === 'P2025') {
@@ -45,10 +47,10 @@ export const updateTodo = async (id: number) => {
 /**
  * create ogp
  */
-export const createOgp = async () => {
+export const createOgp = async (todoId: number, isDeadline: boolean) => {
   const localTargetPath = __dirname + '/static/image/ogp.png'
   const localBasePath = __dirname + '/static/image/haikei.png'
-  const fbTargetPath = 'ogps/4.png'
+  const fbTargetPath = `ogps/${todoId}.png`
   const fbBasePath = 'ogp/haikei.png'
 
   try {
@@ -57,7 +59,7 @@ export const createOgp = async () => {
     // Base Image DonwLoad
     await bucket.file(fbBasePath).download({ destination: localBasePath })
 
-    const canvas = await settingCanvas(localBasePath)
+    const canvas = await settingCanvas(localBasePath, isDeadline)
 
     const buf = canvas.toBuffer()
     fs.writeFileSync(localTargetPath, buf)
@@ -66,7 +68,7 @@ export const createOgp = async () => {
       destination: fbTargetPath,
       metadata: {
         metadata: {
-          firebaseStorageDownloadTokens: 'a'
+          firebaseStorageDownloadTokens: todoId
         }
       }
     })
@@ -79,7 +81,7 @@ export const createOgp = async () => {
 /**
  * Canvasの設定をしてcanvasを返します。
  */
-const settingCanvas = async (localBasePath: string) => {
+const settingCanvas = async (localBasePath: string, isDeadline: boolean) => {
   // Canvas Setting
   const canvas = createCanvas(640, 480)
   const ctx = canvas.getContext('2d')
@@ -89,26 +91,35 @@ const settingCanvas = async (localBasePath: string) => {
   ctx.drawImage(baseImage, 0, 0, 640, 480)
 
   const defaultFont = "bold 30px 'ＭＳ 明朝'"
+  const boldFont = "bold 45px 'ＭＳ 明朝'"
 
   ctx.textBaseline = 'top'
   ctx.textAlign = 'center'
 
-  // 20文字制限
-  ctx.font = "bold 45px 'ＭＳ 明朝'"
-  ctx.fillStyle = 'red'
-  ctx.fillText('部屋の掃除', 320, 130)
+  if (isDeadline) {
+    // 20文字制限
+    ctx.font = boldFont
+    ctx.fillStyle = 'red'
+    ctx.fillText('部屋の掃除', 320, 130)
 
-  ctx.font = defaultFont
-  ctx.fillStyle = 'black'
-  ctx.fillText('を期日までに終わらせられなかったです。', 325, 200)
+    ctx.font = defaultFont
+    ctx.fillStyle = 'black'
+    ctx.fillText('を期日までに終わらせられなかったです。', 325, 200)
 
-  ctx.font = "bold 50px 'ＭＳ 明朝'"
-  ctx.fillText('次は!!!', 325, 240)
+    ctx.font = boldFont
+    ctx.fillText('次は!!!', 325, 240)
 
-  ctx.font = defaultFont
-  ctx.fillText('きちんと決めた期日までにやり遂げます。', 325, 300)
+    ctx.font = defaultFont
+    ctx.fillText('きちんと決めた期日までにやり遂げます。', 325, 300)
+  } else {
+    ctx.font = boldFont
+    ctx.fillStyle = 'red'
+    ctx.fillText('部屋の掃除', 320, 130)
 
-  console.log(canvas.type)
+    ctx.font = defaultFont
+    ctx.fillStyle = 'black'
+    ctx.fillText('を期日までに終わらせました!!!。', 325, 200)
+  }
 
   return canvas
 }

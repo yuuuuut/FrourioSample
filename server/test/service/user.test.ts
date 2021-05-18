@@ -1,31 +1,31 @@
 import prisma from '$/prisma/prisma'
 
-import { createUser, indexUser, showUser } from '$/service/user'
-import { resetDatabase, seedingDatabase } from '../common'
-import { UserCreateBody } from '$/types'
+import * as userService from '$/service/user'
 
-beforeEach(async () => {
-  await resetDatabase()
+import { UserCreateBody } from '$/types'
+import * as common from '$/test/common'
+
+afterEach(async () => {
+  await common.resetDatabase()
 })
 
 afterAll(async (done) => {
-  await resetDatabase()
+  await common.resetDatabase()
   await prisma.$disconnect()
   done()
 })
 
 describe('indexUser() - unit', () => {
+  beforeEach(async () => {
+    await common.seedingDatabase()
+  })
   it('takeが5 skipが0の場合、5人のユーザーを返すこと。', async () => {
-    // 9人のユーザーを作成
-    await seedingDatabase()
-    const users = await indexUser(5, 0)
+    const users = await userService.indexUser(5, 0)
 
     expect(users.length).toBe(5)
   })
   it('takeが5 skipが5の場合、4人のユーザーを返すこと。', async () => {
-    // 9人のユーザーを作成
-    await seedingDatabase()
-    const users = await indexUser(5, 5)
+    const users = await userService.indexUser(5, 5)
 
     expect(users.length).toBe(4)
   })
@@ -33,14 +33,14 @@ describe('indexUser() - unit', () => {
 
 describe('showUser() - unit', () => {
   it('ユーザーが存在する場合、取得できること。', async () => {
-    await seedingDatabase()
+    await common.seedingDatabase()
     const userId = 'Test1'
-    const user = await showUser(userId)
+    const user = await userService.showUser(userId)
 
     expect(user.id).toEqual(userId)
   })
   it('ユーザーが存在しない場合、エラーが発生すること。', async () => {
-    await expect(showUser('None')).rejects.toEqual(
+    await expect(userService.showUser('None')).rejects.toEqual(
       new Error('ユーザーが存在しません。')
     )
   })
@@ -84,7 +84,7 @@ describe('createUser() - unit', () => {
       photoUrl: 'TestPhoto'
     }
 
-    const user = await createUser(body)
+    const user = await userService.createUser(body)
     const savedBeforeUser = await prisma.user.findUnique({
       where: { id: body.id }
     })
@@ -110,7 +110,7 @@ describe('createUser() - unit', () => {
       photoUrl: 'AfterTestPhoto'
     }
 
-    await createUser(beforebody)
+    await userService.createUser(beforebody)
     const savedBeforeUser = await prisma.user.findUnique({
       where: { id: beforebody.id }
     })
@@ -119,7 +119,7 @@ describe('createUser() - unit', () => {
     expect(savedBeforeUser?.displayName).toEqual(beforebody.displayName)
     expect(savedBeforeUser?.photoUrl).toEqual(beforebody.photoUrl)
 
-    await createUser(afterbody)
+    await userService.createUser(afterbody)
     const savedAfterUser = await prisma.user.findUnique({
       where: { id: afterbody.id }
     })

@@ -36,3 +36,4 @@ server/**/*.db
 server/index.js
 server/.upload
 server/upload/
+server/credentials.json
