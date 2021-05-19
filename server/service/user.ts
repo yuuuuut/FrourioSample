@@ -1,5 +1,7 @@
 import prisma from '$/prisma/prisma'
+
 import { UserCreateBody } from '$/types'
+import { __local__ } from './todo'
 
 /**
  * index
@@ -17,6 +19,7 @@ export const indexUser = async (take: number, skip: number) => {
  * show
  */
 export const showUser = async (userId: string) => {
+  //__local__.checkOverDueDate(new Date())
   const user = await prisma.user.findUnique({
     where: { id: userId }
   })

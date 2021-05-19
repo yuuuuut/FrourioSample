@@ -1,8 +1,10 @@
-import { TodoCreateBody } from '$/types'
-import prisma from '$/prisma/prisma'
-import { createCanvas, loadImage } from 'canvas'
-import fs from 'fs'
 import firebase from '$/utils/firebase'
+import prisma from '$/prisma/prisma'
+import moment from 'moment'
+import fs from 'fs'
+
+import { createCanvas, loadImage } from 'canvas'
+import { TodoCreateBody } from '$/types'
 
 /**
  * create
@@ -63,6 +65,7 @@ export const createOgp = async (todoId: number, isDeadline: boolean) => {
     const canvas = await settingCanvas(localBasePath, isDeadline)
 
     const buf = canvas.toBuffer()
+
     fs.writeFileSync(localTargetPath, buf)
 
     await bucket.upload(localTargetPath, {
@@ -123,4 +126,24 @@ const settingCanvas = async (localBasePath: string, isDeadline: boolean) => {
   }
 
   return canvas
+}
+
+/**
+ * Todoが期限切れかどうかチェックする。
+ */
+const checkOverDueDate = async (dueDate: Date) => {
+  const format = 'YYYY-MM-DD'
+  const today = moment().format(format)
+  const dueday = moment(dueDate).format(format)
+
+  console.log(today)
+  console.log(dueday)
+
+  const isDueOverDay = moment(today).isSameOrAfter(dueday)
+
+  return isDueOverDay
+}
+
+export const __local__ = {
+  checkOverDueDate
 }

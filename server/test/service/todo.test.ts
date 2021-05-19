@@ -1,9 +1,10 @@
 import prisma from '$/prisma/prisma'
-
-import { TodoCreateBody } from '$/types'
+import moment from 'moment'
 
 import * as todoService from '$/service/todo'
 import * as common from '$/test/common'
+
+import { TodoCreateBody } from '$/types'
 
 beforeEach(async () => {
   await common.resetDatabase()
@@ -57,5 +58,40 @@ describe('updateTodo() - unit', () => {
     await expect(todoService.updateTodo(0)).rejects.toEqual(
       new Error('Todoが存在しません。')
     )
+  })
+})
+
+describe('checkOverDueDate() - unit', () => {
+  it('期限切れでない場合、falseを返すこと。', async () => {
+    const date = '2021-01-10'
+    const today = moment(date).toDate()
+    const tommorow = moment(date).add(1, 'day').toDate()
+
+    Date.now = () => new Date(today).getTime()
+
+    const val = await todoService.__local__.checkOverDueDate(tommorow)
+
+    expect(val).toBe(false)
+  })
+  it('期限切れの場合、trueを返すこと。', async () => {
+    const date = '2021-01-10'
+    const today = moment(date).toDate()
+    const yesterday = moment(date).add(-1, 'day').toDate()
+
+    Date.now = () => new Date(today).getTime()
+
+    const val = await todoService.__local__.checkOverDueDate(yesterday)
+
+    expect(val).toBe(true)
+  })
+  it('同じ日の場合、trueを返すこと。', async () => {
+    const date = '2021-01-10'
+    const today = moment(date).toDate()
+
+    Date.now = () => new Date(today).getTime()
+
+    const val = await todoService.__local__.checkOverDueDate(today)
+
+    expect(val).toBe(true)
   })
 })
