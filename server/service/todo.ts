@@ -26,25 +26,27 @@ export const createTodo = async (body: TodoCreateBody) => {
 /**
  * update
  */
-export const updateTodo = async (id: number) => {
-  try {
-    const todo = await prisma.todo.update({
-      where: { id },
-      data: {
-        done: true
-      }
-    })
+export const updateTodo = async (todoId: number) => {
+  const todo = await prisma.todo.update({
+    where: { id: todoId },
+    data: {
+      done: true
+    }
+  })
 
-    await createOgp(todo.id, true)
+  await createOgp(todo.id, true)
 
-    return todo
+  return todo
+  /*
   } catch (e) {
+    /
     if (e.code === 'P2025') {
       throw Object.assign(new Error('Todoが存在しません。'), { status: 404 })
     } else {
       throw Object.assign(new Error(e), { status: 500 })
     }
   }
+  */
 }
 
 /**
@@ -135,9 +137,6 @@ const checkOverDueDate = async (dueDate: Date) => {
   const format = 'YYYY-MM-DD'
   const today = moment().format(format)
   const dueday = moment(dueDate).format(format)
-
-  console.log(today)
-  console.log(dueday)
 
   const isDueOverDay = moment(today).isSameOrAfter(dueday)
 

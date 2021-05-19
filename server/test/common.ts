@@ -1,13 +1,26 @@
 import util from 'util'
 
+import { mockDeep, MockProxy, mockReset } from 'jest-mock-extended'
 import { PrismaClient, User } from '@prisma/client'
-import prisma from '$/prisma/prisma'
+import prisma from '../prisma/prisma'
+
+////////////////////
+//  Jest Settings
+///////////////////
+jest.setTimeout(60000)
+jest.mock('../prisma/prisma', () => ({
+  __esModule: true,
+  default: mockDeep<PrismaClient>()
+}))
+
+beforeEach(() => {
+  mockReset(prismaMock)
+})
+
+export const prismaMock = prisma as unknown as MockProxy<PrismaClient>
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const exec = util.promisify(require('child_process').exec)
-
-// Jest Setting
-jest.setTimeout(30000)
 
 // Database Table Names
 const tableNames = [
