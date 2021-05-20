@@ -1,7 +1,7 @@
 import util from 'util'
 
 import { mockDeep, MockProxy, mockReset } from 'jest-mock-extended'
-import { PrismaClient, User } from '@prisma/client'
+import { PrismaClient } from '@prisma/client'
 import prisma from '../prisma/prisma'
 
 ////////////////////
@@ -52,34 +52,4 @@ export const resetDatabase = async () => {
  */
 export const seedingDatabase = async () => {
   await exec(`yarn prisma:seed`)
-}
-
-/**
- * TestUserデータを作成します。
- */
-export const createTestUser = async (id: string) => {
-  const user = await prisma.user.create({
-    data: {
-      id,
-      displayName: 'TestUserName',
-      photoUrl: 'TestUserPhoto'
-    }
-  })
-
-  return user
-}
-
-/**
- * TestTodoデータを作成します。
- */
-export const createTestTodo = async (user: User) => {
-  const todo = await prisma.todo.create({
-    data: {
-      title: 'TestTitle',
-      due_date: new Date(),
-      userId: user.id
-    }
-  })
-
-  return todo
 }

@@ -4,7 +4,7 @@ import moment from 'moment'
 import fs from 'fs'
 
 import { createCanvas, loadImage } from 'canvas'
-import { TodoCreateBody } from '$/types'
+import { TodoCreateBody, TodoUpdateBody } from '$/types'
 
 /**
  * create
@@ -26,15 +26,20 @@ export const createTodo = async (body: TodoCreateBody) => {
 /**
  * update
  */
-export const updateTodo = async (todoId: number) => {
+export const updateTodo = async (todoId: number, body: TodoUpdateBody) => {
+  const { done } = body
+
   const todo = await prisma.todo.update({
     where: { id: todoId },
     data: {
-      done: true
+      done
     }
   })
 
-  await createOgp(todo.id, true)
+  const isOverDueDate = await checkOverDueDate(todo.due_date)
+  isOverDueDate
+    ? await createOgp(todo.id, true)
+    : await createOgp(todo.id, false)
 
   return todo
   /*
