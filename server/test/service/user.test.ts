@@ -1,53 +1,60 @@
-import prisma from '$/prisma/prisma'
-
 import * as userService from '$/service/user'
 
-import { UserCreateBody } from '$/types'
-import * as common from '$/test/common'
-
-afterEach(async () => {
-  await common.resetDatabase()
-})
-
-afterAll(async (done) => {
-  await common.resetDatabase()
-  await prisma.$disconnect()
-  done()
-})
+import { prismaMock } from '../common'
+import { UserShow } from '$/types'
 
 describe('indexUser() - unit', () => {
-  beforeEach(async () => {
-    await common.seedingDatabase()
-  })
-  it('takeが5 skipが0の場合、5人のユーザーを返すこと。', async () => {
-    const users = await userService.indexUser(5, 0)
+  it('ユーザーが存在する場合、取得ができること。', async () => {
+    const users: UserShow[] = [
+      {
+        id: 'Test1',
+        displayName: 'TestUser',
+        photoUrl: 'TestPhoto',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        id: 'Test2',
+        displayName: 'TestUser',
+        photoUrl: 'TestPhoto',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        id: 'Test3',
+        displayName: 'TestUser',
+        photoUrl: 'TestPhoto',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        id: 'Test4',
+        displayName: 'TestUser',
+        photoUrl: 'TestPhoto',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        id: 'Test5',
+        displayName: 'TestUser',
+        photoUrl: 'TestPhoto',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      }
+    ]
 
-    expect(users.length).toBe(5)
-  })
-  it('takeが5 skipが5の場合、4人のユーザーを返すこと。', async () => {
-    const users = await userService.indexUser(5, 5)
+    const mockFn = prismaMock.user.findMany.mockResolvedValue(users)
 
-    expect(users.length).toBe(4)
+    const skip = 0
+    const take = 5
+
+    await expect(userService.indexUser(take, skip)).resolves.toEqual(users)
+    expect(mockFn).toHaveBeenCalledWith({ skip, take })
+    expect(mockFn.mock.calls[0][0]?.skip).toBe(skip)
+    expect(mockFn.mock.calls[0][0]?.take).toBe(take)
   })
 })
 
-describe('showUser() - unit', () => {
-  it('ユーザーが存在する場合、取得できること。', async () => {
-    await common.seedingDatabase()
-    const userId = 'Test1'
-    const user = await userService.showUser(userId)
-
-    expect(user.id).toEqual(userId)
-  })
-  it('ユーザーが存在しない場合、エラーが発生すること。', async () => {
-    await expect(userService.showUser('None')).rejects.toEqual(
-      new Error('ユーザーが存在しません。')
-    )
-  })
-})
-
-/*
-Mock Version
 describe('showUser() - unit', () => {
   it('ユーザーが存在する場合、取得ができること。', async () => {
     const user: UserShow = {
@@ -62,70 +69,40 @@ describe('showUser() - unit', () => {
 
     //prismaMock.user.findUnique.mockImplementation((async () => user) as any)
 
-    await expect(showUser(user.id)).resolves.toEqual({
+    await expect(userService.showUser(user.id)).resolves.toEqual({
       ...user
     })
   })
   it('ユーザーが存在しない場合、エラーが発生すること。', async () => {
-    prismaMock.user.findUnique.mockRejectedValue(
-      new Error('ユーザーが存在しません。')
-    )
-
-    await expect(showUser('None')).rejects.toThrow('ユーザーが存在しません。')
+    await expect(userService.showUser('None')).rejects.toMatchObject({
+      message: 'ユーザーが存在しません。'
+    })
   })
 })
-*/
 
 describe('createUser() - unit', () => {
-  it('ユーザーの作成ができること', async () => {
-    const body: UserCreateBody = {
+  it('ユーザーの作成ができること。', async () => {
+    const user: UserShow = {
       id: 'Test',
       displayName: 'TestUser',
-      photoUrl: 'TestPhoto'
+      photoUrl: 'TestPhoto',
+      createdAt: new Date(),
+      updatedAt: new Date()
     }
 
-    const user = await userService.createUser(body)
-    const savedBeforeUser = await prisma.user.findUnique({
-      where: { id: body.id }
+    const mockFn = prismaMock.user.upsert.mockResolvedValue(user)
+
+    await expect(
+      userService.createUser({
+        id: user.id,
+        displayName: user.displayName,
+        photoUrl: user.photoUrl
+      })
+    ).resolves.toEqual(user)
+    expect(mockFn).toHaveBeenCalledWith({
+      create: { displayName: 'TestUser', id: 'Test', photoUrl: 'TestPhoto' },
+      update: { displayName: 'TestUser', photoUrl: 'TestPhoto' },
+      where: { id: 'Test' }
     })
-
-    expect(user.id).toEqual(body.id)
-    expect(user.displayName).toEqual(body.displayName)
-    expect(user.photoUrl).toEqual(body.photoUrl)
-
-    expect(savedBeforeUser?.id).toEqual(body.id)
-    expect(savedBeforeUser?.displayName).toEqual(body.displayName)
-    expect(savedBeforeUser?.photoUrl).toEqual(body.photoUrl)
-  })
-  it('ユーザーが存在し、displayNameとphotoUrlが更新されてる場合、更新できること', async () => {
-    const beforebody: UserCreateBody = {
-      id: 'Test',
-      displayName: 'TestUser',
-      photoUrl: 'TestPhoto'
-    }
-
-    const afterbody: UserCreateBody = {
-      id: 'Test',
-      displayName: 'AfterTestUser',
-      photoUrl: 'AfterTestPhoto'
-    }
-
-    await userService.createUser(beforebody)
-    const savedBeforeUser = await prisma.user.findUnique({
-      where: { id: beforebody.id }
-    })
-
-    expect(savedBeforeUser?.id).toEqual(beforebody.id)
-    expect(savedBeforeUser?.displayName).toEqual(beforebody.displayName)
-    expect(savedBeforeUser?.photoUrl).toEqual(beforebody.photoUrl)
-
-    await userService.createUser(afterbody)
-    const savedAfterUser = await prisma.user.findUnique({
-      where: { id: afterbody.id }
-    })
-
-    expect(savedAfterUser?.id).toEqual(afterbody.id)
-    expect(savedAfterUser?.displayName).toEqual(afterbody.displayName)
-    expect(savedAfterUser?.photoUrl).toEqual(afterbody.photoUrl)
   })
 })

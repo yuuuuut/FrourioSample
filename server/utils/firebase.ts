@@ -5,7 +5,7 @@ const credentials = require('../credentials.json')
 
 firebase.initializeApp({
   credential: firebase.credential.cert(credentials),
-  storageBucket: 'frouriotest.appspot.com'
+  storageBucket: 'frourio-sample.appspot.com'
 })
 
 export default firebase

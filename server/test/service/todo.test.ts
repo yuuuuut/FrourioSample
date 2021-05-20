@@ -1,61 +1,103 @@
-import prisma from '$/prisma/prisma'
-
-import { TodoCreateBody } from '$/types'
+import moment from 'moment'
 
 import * as todoService from '$/service/todo'
-import * as common from '$/test/common'
 
-beforeEach(async () => {
-  await common.resetDatabase()
-})
-
-afterAll(async (done) => {
-  await common.resetDatabase()
-  await prisma.$disconnect()
-  done()
-})
+import { prismaMock } from '$/test/common'
+import { Todo } from '@prisma/client'
+import { TodoUpdateBody } from '$/types'
 
 describe('createTodo() - unit', () => {
   it('todoの作成ができること。', async () => {
-    const user = await common.createTestUser('TestUser')
-
-    const data: TodoCreateBody = {
-      title: 'TestTodo',
+    const todo: Todo = {
+      id: 1,
+      title: 'TestTitle',
+      done: false,
       due_date: new Date(),
-      userId: user.id
+      userId: 'TestUser',
+      createdAt: new Date(),
+      updatedAt: new Date()
     }
 
-    const todo = await todoService.createTodo(data)
+    const mockFn = prismaMock.todo.create.mockResolvedValue(todo)
 
-    expect(todo.title).toBe(data.title)
-    expect(todo.done).toBe(false)
-    expect(todo.userId).toBe(user.id)
+    await expect(
+      todoService.createTodo({
+        title: todo.title,
+        due_date: todo.due_date,
+        userId: todo.userId
+      })
+    ).resolves.toEqual(todo)
+    expect(mockFn).toHaveBeenCalledWith({
+      data: {
+        due_date: todo.due_date,
+        title: todo.title,
+        userId: todo.userId
+      }
+    })
   })
 })
 
 describe('updateTodo() - unit', () => {
   it('todoの更新ができること。', async () => {
-    const user = await common.createTestUser('TestUser')
-    const todo = await common.createTestTodo(user)
+    const todo: Todo = {
+      id: 1,
+      title: 'Test',
+      done: false,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      due_date: new Date(),
+      userId: 'TestUser'
+    }
 
-    expect(todo.done).toBe(false)
+    const body: TodoUpdateBody = {
+      done: false
+    }
 
-    const spy = jest
+    const mockFn = prismaMock.todo.update.mockResolvedValue(todo)
+
+    jest
       .spyOn(todoService, 'createOgp')
       .mockImplementation(() => Promise.resolve())
 
-    const afterTodo = await todoService.updateTodo(todo.id)
-
-    expect(afterTodo.id).toBe(todo.id)
-    expect(afterTodo.done).toBe(true)
-    expect(afterTodo.userId).toBe(todo.userId)
-    expect(spy.mock.calls.length).toBe(1)
-
-    spy.mockReset()
+    await expect(todoService.updateTodo(todo.id, body)).resolves.toEqual(todo)
+    expect(mockFn).toHaveBeenCalledWith({
+      data: { done: false },
+      where: { id: 1 }
+    })
   })
-  it('todoが存在しない場合、正しいエラーが発生すること。', async () => {
-    await expect(todoService.updateTodo(0)).rejects.toEqual(
-      new Error('Todoが存在しません。')
-    )
+})
+
+describe('checkOverDueDate() - unit', () => {
+  it('期限切れでない場合、falseを返すこと。', async () => {
+    const date = '2021-01-10'
+    const today = moment(date).toDate()
+    const tommorow = moment(date).add(1, 'day').toDate()
+
+    Date.now = () => new Date(today).getTime()
+
+    const val = await todoService.__local__.checkOverDueDate(tommorow)
+
+    expect(val).toBe(false)
+  })
+  it('期限切れの場合、trueを返すこと。', async () => {
+    const date = '2021-01-10'
+    const today = moment(date).toDate()
+    const yesterday = moment(date).add(-1, 'day').toDate()
+
+    Date.now = () => new Date(today).getTime()
+
+    const val = await todoService.__local__.checkOverDueDate(yesterday)
+
+    expect(val).toBe(true)
+  })
+  it('同じ日の場合、trueを返すこと。', async () => {
+    const date = '2021-01-10'
+    const today = moment(date).toDate()
+
+    Date.now = () => new Date(today).getTime()
+
+    const val = await todoService.__local__.checkOverDueDate(today)
+
+    expect(val).toBe(true)
   })
 })

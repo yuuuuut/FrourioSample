@@ -9,11 +9,18 @@ import firebase from '~/utils/firebase'
 
 import type { FormEvent, ChangeEvent } from 'react'
 
+import type { Todo } from '$prisma/client'
+
+import DatePicker from 'react-datepicker'
+import 'react-datepicker/dist/react-datepicker.css'
+
 const Home = () => {
   //const { data: tasks, error, revalidate } = useAspidaSWR(apiClient.tasks)
-  const [label, setLabel] = useState('')
-  const inputLabel = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => setLabel(e.target.value),
+  const [title, setTitle] = useState('')
+  const [startDate, setStartDate] = useState<Date | null>(new Date())
+
+  const inputTitle = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => setTitle(e.target.value),
     []
   )
 
@@ -41,19 +48,6 @@ const Home = () => {
     } catch (err) {
       console.log(err)
     }
-    /*
-        const token = await firebase.auth().currentUser?.getIdToken(true)
-        console.log(token)
-        if (token) {
-          localStorage.setItem('@token', token)
-        }
-
-        console.log(data.user)
-        const id = data.user?.uid as string
-        const name = data.user?.displayName as string
-
-        await apiClient.user.$post({ body: { id, name } })
-        */
   }, [])
 
   /**
@@ -69,19 +63,30 @@ const Home = () => {
       })
   }, [])
 
-  /*
-  const createTask = useCallback(
+  const createTodo = useCallback(
     async (e: FormEvent) => {
       e.preventDefault()
-      if (!label) return
 
-      await apiClient.tasks.post({ body: { label } })
-      setLabel('')
-      revalidate()
+      console.log(title)
+      console.log(startDate)
+      if (!startDate) return
+
+      const res = await apiClient.todos.post({
+        body: { title, due_date: startDate, userId: '1' }
+      })
+      console.log(res)
     },
-    [label]
+    [title, startDate]
   )
 
+  const updateTodo = useCallback(async (todo: Todo) => {
+    const res = await apiClient.todos
+      ._todoId(todo.id)
+      .patch({ body: { done: !todo.done } })
+    console.log(res)
+  }, [])
+
+  /*
   const toggleDone = useCallback(async (task: Task) => {
     await apiClient.tasks._taskId(task.id).patch({ body: { done: !task.done } })
     revalidate()
@@ -115,6 +120,18 @@ const Home = () => {
 
         <button onClick={login}>Login</button>
         <button onClick={logout}>Logout</button>
+
+        <div>
+          <h2>Todo Create</h2>
+          <form onSubmit={createTodo}>
+            <input value={title} type="text" onChange={inputTitle} />
+            <DatePicker
+              selected={startDate}
+              onChange={(date: Date | null) => setStartDate(date)}
+            />
+            <input type="submit" value="ADD" />
+          </form>
+        </div>
       </main>
     </div>
   )
