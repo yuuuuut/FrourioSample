@@ -7,6 +7,18 @@ import { createCanvas, loadImage } from 'canvas'
 import { TodoCreateBody, TodoUpdateBody } from '$/types'
 
 /**
+ * index
+ */
+export const indexTodo = async (take: number, skip: number) => {
+  const todos = await prisma.todo.findMany({
+    take,
+    skip
+  })
+
+  return todos
+}
+
+/**
  * create
  */
 export const createTodo = async (body: TodoCreateBody) => {

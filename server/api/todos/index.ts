@@ -3,7 +3,10 @@ import { Todo } from '.prisma/client'
 
 export type Methods = {
   get: {
-    resBody: string
+    query?: {
+      page: number
+    }
+    resBody: { todos: Todo[] }
   }
   post: {
     reqBody: TodoCreateBody

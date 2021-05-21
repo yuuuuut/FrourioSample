@@ -2,9 +2,53 @@ import moment from 'moment'
 
 import * as todoService from '$/service/todo'
 
+import { TodoUpdateBody } from '$/types'
 import { prismaMock } from '$/test/common'
 import { Todo } from '@prisma/client'
-import { TodoUpdateBody } from '$/types'
+
+describe('indexTodo() - unit', () => {
+  it('todoの一覧が取得できること。', async () => {
+    const todos: Todo[] = [
+      {
+        id: 1,
+        title: 'TestTitle',
+        due_date: new Date(),
+        done: false,
+        userId: 'TestUser',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        id: 2,
+        title: 'TestTitle',
+        due_date: new Date(),
+        done: false,
+        userId: 'TestUser',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        id: 3,
+        title: 'TestTitle',
+        due_date: new Date(),
+        done: false,
+        userId: 'TestUser',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      }
+    ]
+
+    const mockFn = prismaMock.todo.findMany.mockResolvedValue(todos)
+
+    const skip = 0
+    const take = 5
+
+    await expect(todoService.indexTodo(take, skip)).resolves.toEqual(todos)
+    expect(mockFn).toHaveBeenCalledWith({ skip, take })
+    expect(mockFn.mock.calls[0][0]?.skip).toBe(skip)
+    expect(mockFn.mock.calls[0][0]?.take).toBe(take)
+  })
+})
 
 describe('createTodo() - unit', () => {
   it('todoの作成ができること。', async () => {
