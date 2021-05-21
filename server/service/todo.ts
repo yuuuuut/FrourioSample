@@ -4,6 +4,7 @@ import moment from 'moment'
 import fs from 'fs'
 
 import { createCanvas, loadImage } from 'canvas'
+
 import { TodoCreateBody, TodoUpdateBody } from '$/types'
 
 /**
@@ -61,10 +62,12 @@ export const updateTodo = async (todoId: number, body: TodoUpdateBody) => {
     }
   })
 
-  const isOverDueDate = await checkOverDueDate(todo.due_date)
-  isOverDueDate
-    ? await createOgp(todo.id, true)
-    : await createOgp(todo.id, false)
+  if (done) {
+    const isOverDueDate = await checkOverDueDate(todo.due_date)
+    isOverDueDate
+      ? await createOgp(todo.id, true)
+      : await createOgp(todo.id, false)
+  }
 
   return todo
   /*
@@ -89,12 +92,13 @@ export const createOgp = async (todoId: number, isDeadline: boolean) => {
   const fbBasePath = 'ogp/haikei.png'
 
   try {
+    const todo = await showTodo(todoId)
     const bucket = firebase.storage().bucket()
 
     // Base Image DonwLoad
     await bucket.file(fbBasePath).download({ destination: localBasePath })
 
-    const canvas = await settingCanvas(localBasePath, isDeadline)
+    const canvas = await settingCanvas(localBasePath, isDeadline, todo.title)
 
     const buf = canvas.toBuffer()
 
@@ -117,7 +121,11 @@ export const createOgp = async (todoId: number, isDeadline: boolean) => {
 /**
  * Canvasの設定をしてcanvasを返します。
  */
-const settingCanvas = async (localBasePath: string, isDeadline: boolean) => {
+const settingCanvas = async (
+  localBasePath: string,
+  isDeadline: boolean,
+  title: string
+) => {
   // Canvas Setting
   const canvas = createCanvas(640, 480)
   const ctx = canvas.getContext('2d')
@@ -136,7 +144,7 @@ const settingCanvas = async (localBasePath: string, isDeadline: boolean) => {
     // 20文字制限
     ctx.font = boldFont
     ctx.fillStyle = 'red'
-    ctx.fillText('部屋の掃除', 320, 130)
+    ctx.fillText(title, 320, 130)
 
     ctx.font = defaultFont
     ctx.fillStyle = 'black'
@@ -150,7 +158,7 @@ const settingCanvas = async (localBasePath: string, isDeadline: boolean) => {
   } else {
     ctx.font = boldFont
     ctx.fillStyle = 'red'
-    ctx.fillText('部屋の掃除', 320, 130)
+    ctx.fillText(title, 320, 130)
 
     ctx.font = defaultFont
     ctx.fillStyle = 'black'
@@ -163,7 +171,7 @@ const settingCanvas = async (localBasePath: string, isDeadline: boolean) => {
 /**
  * Todoが期限切れかどうかチェックする。
  */
-const checkOverDueDate = async (dueDate: Date) => {
+export const checkOverDueDate = async (dueDate: Date) => {
   const format = 'YYYY-MM-DD'
   const today = moment().format(format)
   const dueday = moment(dueDate).format(format)
@@ -171,8 +179,4 @@ const checkOverDueDate = async (dueDate: Date) => {
   const isDueOverDay = moment(today).isSameOrAfter(dueday)
 
   return isDueOverDay
-}
-
-export const __local__ = {
-  checkOverDueDate
 }
