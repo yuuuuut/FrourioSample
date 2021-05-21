@@ -1,9 +1,9 @@
-import { TodoUpdateBody } from '$/types'
+import { TodoShow, TodoUpdateBody } from '$/types'
 import { Todo } from '.prisma/client'
 
 export type Methods = {
   get: {
-    resBody: string
+    resBody: { todo: TodoShow }
   }
   patch: {
     reqBody: TodoUpdateBody

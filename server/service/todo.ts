@@ -7,6 +7,31 @@ import { createCanvas, loadImage } from 'canvas'
 import { TodoCreateBody, TodoUpdateBody } from '$/types'
 
 /**
+ * index
+ */
+export const indexTodo = async (take: number, skip: number) => {
+  const todos = await prisma.todo.findMany({
+    take,
+    skip
+  })
+
+  return todos
+}
+
+/**
+ * show
+ */
+export const showTodo = async (todoId: number) => {
+  const todo = await prisma.todo.findUnique({
+    where: { id: todoId }
+  })
+  if (!todo)
+    throw Object.assign(new Error('Todoが存在しません。'), { status: 404 })
+
+  return todo
+}
+
+/**
  * create
  */
 export const createTodo = async (body: TodoCreateBody) => {

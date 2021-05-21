@@ -15,7 +15,16 @@ import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 
 const Home = () => {
-  //const { data: tasks, error, revalidate } = useAspidaSWR(apiClient.tasks)
+  const [page, setPgae] = useState(1)
+  const {
+    data: todos,
+    error,
+    revalidate
+  } = useAspidaSWR(apiClient.todos, {
+    query: { page }
+  })
+  console.log(todos)
+
   const [title, setTitle] = useState('')
   const [startDate, setStartDate] = useState<Date | null>(new Date())
 
@@ -84,6 +93,7 @@ const Home = () => {
       ._todoId(todo.id)
       .patch({ body: { done: !todo.done } })
     console.log(res)
+    revalidate()
   }, [])
 
   /*
@@ -101,6 +111,9 @@ const Home = () => {
   if (!tasks) return <div>loading...</div>
 
   */
+
+  if (error) return <div>failed to load</div>
+  if (!todos) return <div>loading...</div>
 
   return (
     <div className={styles.container}>
@@ -131,6 +144,21 @@ const Home = () => {
             />
             <input type="submit" value="ADD" />
           </form>
+
+          <ul>
+            {todos.map((todo) => (
+              <li key={todo.id}>
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={todo.done}
+                    onChange={() => updateTodo(todo)}
+                  />
+                  <span>{todo.title}</span>
+                </label>
+              </li>
+            ))}
+          </ul>
         </div>
       </main>
     </div>

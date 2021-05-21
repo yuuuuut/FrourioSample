@@ -2,9 +2,78 @@ import moment from 'moment'
 
 import * as todoService from '$/service/todo'
 
+import { TodoShow, TodoUpdateBody } from '$/types'
 import { prismaMock } from '$/test/common'
 import { Todo } from '@prisma/client'
-import { TodoUpdateBody } from '$/types'
+
+describe('indexTodo() - unit', () => {
+  it('todoの一覧が取得できること。', async () => {
+    const todos: Todo[] = [
+      {
+        id: 1,
+        title: 'TestTitle',
+        due_date: new Date(),
+        done: false,
+        userId: 'TestUser',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        id: 2,
+        title: 'TestTitle',
+        due_date: new Date(),
+        done: false,
+        userId: 'TestUser',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        id: 3,
+        title: 'TestTitle',
+        due_date: new Date(),
+        done: false,
+        userId: 'TestUser',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      }
+    ]
+
+    const mockFn = prismaMock.todo.findMany.mockResolvedValue(todos)
+
+    const skip = 0
+    const take = 5
+
+    await expect(todoService.indexTodo(take, skip)).resolves.toEqual(todos)
+    expect(mockFn).toHaveBeenCalledWith({ skip, take })
+    expect(mockFn.mock.calls[0][0]?.skip).toBe(skip)
+    expect(mockFn.mock.calls[0][0]?.take).toBe(take)
+  })
+})
+
+describe('showTodo() - unit', () => {
+  it('Todoが存在する場合、取得ができること。', async () => {
+    const todo: TodoShow = {
+      id: 1,
+      title: 'TestTitle',
+      due_date: new Date(),
+      done: false,
+      userId: 'TestUser',
+      createdAt: new Date(),
+      updatedAt: new Date()
+    }
+
+    prismaMock.todo.findUnique.mockResolvedValue(todo)
+
+    await expect(todoService.showTodo(todo.id)).resolves.toEqual({
+      ...todo
+    })
+  })
+  it('Todoが存在しない場合、エラーが発生すること。', async () => {
+    await expect(todoService.showTodo(0)).rejects.toMatchObject({
+      message: 'Todoが存在しません。'
+    })
+  })
+})
 
 describe('createTodo() - unit', () => {
   it('todoの作成ができること。', async () => {
