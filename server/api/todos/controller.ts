@@ -10,7 +10,7 @@ export default defineController(() => ({
 
       const todos = await indexTodo(take, skip)
 
-      return { status: 200, body: { todos } }
+      return { status: 200, body: todos }
     } catch (error) {
       return { status: 500, body: { error } }
     }

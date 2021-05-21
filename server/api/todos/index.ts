@@ -6,7 +6,7 @@ export type Methods = {
     query?: {
       page: number
     }
-    resBody: { todos: Todo[] }
+    resBody: Todo[]
   }
   post: {
     reqBody: TodoCreateBody
