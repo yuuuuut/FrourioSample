@@ -1,8 +1,15 @@
-import { updateTodo } from '$/service/todo'
+import { showTodo, updateTodo } from '$/service/todo'
 import { defineController } from './$relay'
 
 export default defineController(() => ({
-  get: () => ({ status: 200, body: 'Hello' }),
+  get: async ({ params }) => {
+    try {
+      const todo = await showTodo(params.todoId)
+      return { status: 200, body: { todo } }
+    } catch (error) {
+      return { status: error.status || 500, body: { error: error.message } }
+    }
+  },
   patch: async ({ params, body }) => {
     try {
       const todo = await updateTodo(params.todoId, body)

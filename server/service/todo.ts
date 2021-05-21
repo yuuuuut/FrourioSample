@@ -19,6 +19,19 @@ export const indexTodo = async (take: number, skip: number) => {
 }
 
 /**
+ * show
+ */
+export const showTodo = async (todoId: number) => {
+  const todo = await prisma.todo.findUnique({
+    where: { id: todoId }
+  })
+  if (!todo)
+    throw Object.assign(new Error('Todoが存在しません。'), { status: 404 })
+
+  return todo
+}
+
+/**
  * create
  */
 export const createTodo = async (body: TodoCreateBody) => {
