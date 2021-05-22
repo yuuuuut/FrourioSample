@@ -15,7 +15,16 @@ const ShowTodo = () => {
 
   const getTodo = async (id: number) => {
     try {
-      const res = await apiClient.todos._todoId(id).get()
+      const token = localStorage.getItem('@token')
+
+      if (!token) {
+        console.error('Tokenが存在しません。')
+        return
+      }
+
+      const res = await apiClient.todos._todoId(id).get({
+        headers: { authorization: token }
+      })
       console.log(res)
 
       setTodoShow(res.body.todo)
