@@ -107,7 +107,7 @@ describe('createTodo() - unit', () => {
 })
 
 describe('updateTodo() - unit', () => {
-  it('todoの更新ができること。', async () => {
+  it('todoをfalseに更新した場合、checkOverDueDate と createOgp が呼ばれないこと。', async () => {
     const todo: Todo = {
       id: 1,
       title: 'Test',
@@ -122,17 +122,51 @@ describe('updateTodo() - unit', () => {
       done: false
     }
 
+    // Prisma Mock
     const mockFn = prismaMock.todo.update.mockResolvedValue(todo)
-
-    jest
-      .spyOn(todoService, 'createOgp')
-      .mockImplementation(() => Promise.resolve())
 
     await expect(todoService.updateTodo(todo.id, body)).resolves.toEqual(todo)
     expect(mockFn).toHaveBeenCalledWith({
       data: { done: false },
       where: { id: 1 }
     })
+  })
+  it('todoをtrueに更新した場合、checkOverDueDate と createOgp が呼ばれること。', async () => {
+    const todo: Todo = {
+      id: 1,
+      title: 'Test',
+      done: false,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      due_date: new Date(),
+      userId: 'TestUser'
+    }
+
+    const body: TodoUpdateBody = {
+      done: true
+    }
+
+    // Prisma Mock
+    const mockFn = prismaMock.todo.update.mockResolvedValue(todo)
+
+    // checkOverDueDate Mock
+    const checkOverDueDateMock = jest
+      .spyOn(todoService, 'checkOverDueDate')
+      .mockImplementation(() => Promise.resolve(true))
+
+    // createOgp Mock
+    const createOgpMock = jest
+      .spyOn(todoService, 'createOgp')
+      .mockImplementation(() => Promise.resolve())
+
+    await expect(todoService.updateTodo(todo.id, body)).resolves.toEqual(todo)
+    expect(mockFn).toHaveBeenCalledWith({
+      data: { done: true },
+      where: { id: 1 }
+    })
+
+    expect(checkOverDueDateMock).toHaveBeenCalledTimes(1)
+    expect(createOgpMock).toHaveBeenCalled()
   })
 })
 
@@ -144,7 +178,7 @@ describe('checkOverDueDate() - unit', () => {
 
     Date.now = () => new Date(today).getTime()
 
-    const val = await todoService.__local__.checkOverDueDate(tommorow)
+    const val = await todoService.checkOverDueDate(tommorow)
 
     expect(val).toBe(false)
   })
@@ -155,7 +189,7 @@ describe('checkOverDueDate() - unit', () => {
 
     Date.now = () => new Date(today).getTime()
 
-    const val = await todoService.__local__.checkOverDueDate(yesterday)
+    const val = await todoService.checkOverDueDate(yesterday)
 
     expect(val).toBe(true)
   })
@@ -165,7 +199,7 @@ describe('checkOverDueDate() - unit', () => {
 
     Date.now = () => new Date(today).getTime()
 
-    const val = await todoService.__local__.checkOverDueDate(today)
+    const val = await todoService.checkOverDueDate(today)
 
     expect(val).toBe(true)
   })
