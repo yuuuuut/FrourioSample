@@ -24,6 +24,7 @@ export type UserShow = {
   photoUrl: string
   createdAt: Date
   updatedAt: Date
+  todos?: Todo[]
 }
 
 export type UserInfo = {
