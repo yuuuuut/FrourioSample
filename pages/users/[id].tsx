@@ -2,12 +2,12 @@ import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/dist/client/router'
 
 import { apiClient } from '~/utils/apiClient'
+import { UserShow } from '~/server/types'
 
+import UserShowHeader from '~/components/users/UserShowHeader'
 import TodoList from '~/components/todos/TodoList'
 
 import type { Todo } from '$prisma/client'
-import { UserShow } from '~/server/types'
-import UserShowHeader from '~/components/users/UserShowHeader'
 
 /**
  * Main

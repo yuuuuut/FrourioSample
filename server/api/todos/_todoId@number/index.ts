@@ -7,6 +7,7 @@ export type Methods = {
     resBody: { todo: TodoShow }
   }
   patch: {
+    reqHeaders: AuthHeader
     reqBody: TodoUpdateBody
     resBody: { todo: Todo }
   }
