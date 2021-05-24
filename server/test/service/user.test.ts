@@ -69,12 +69,12 @@ describe('showUser() - unit', () => {
 
     //prismaMock.user.findUnique.mockImplementation((async () => user) as any)
 
-    await expect(userService.showUser(user.id)).resolves.toEqual({
+    await expect(userService.showUser(user.id, 0, 0)).resolves.toEqual({
       ...user
     })
   })
   it('ユーザーが存在しない場合、エラーが発生すること。', async () => {
-    await expect(userService.showUser('None')).rejects.toMatchObject({
+    await expect(userService.showUser('None', 0, 0)).rejects.toMatchObject({
       message: 'ユーザーが存在しません。'
     })
   })

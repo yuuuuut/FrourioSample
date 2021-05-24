@@ -6,6 +6,8 @@ import { UserShow } from '~/server/types'
 import { apiClient } from '~/utils/apiClient'
 
 const ShowUser = () => {
+  const [page, setPgae] = useState(1)
+
   const router = useRouter()
   console.log(router.query)
 
@@ -14,7 +16,17 @@ const ShowUser = () => {
 
   const getUser = async (id: string) => {
     try {
-      const res = await apiClient.user._userId(id).get()
+      const token = localStorage.getItem('@token')
+
+      if (!token) {
+        console.error('Tokenが存在しません。')
+        return
+      }
+
+      const res = await apiClient.user
+        ._userId(id)
+        .get({ query: { page }, headers: { authorization: token } })
+      console.log(res)
 
       setUserShow(res.body.user)
     } catch (err) {
