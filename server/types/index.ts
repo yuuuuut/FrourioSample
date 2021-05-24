@@ -1,5 +1,9 @@
 import { Todo, User } from '.prisma/client'
 
+export type AuthHeader = {
+  authorization: string
+}
+
 export type UserCreateBody = Pick<User, 'id' | 'displayName' | 'photoUrl'>
 export type TodoCreateBody = Pick<Todo, 'title' | 'due_date' | 'userId'>
 export type TodoUpdateBody = Pick<Todo, 'done'>
@@ -26,8 +30,4 @@ export type UserInfo = {
   id: string
   name: string
   icon: string
-}
-
-export type AuthHeader = {
-  authorization: string
 }

@@ -41,6 +41,13 @@ const Home = () => {
 
     try {
       const data = await firebase.auth().signInWithPopup(provider)
+
+      const token = await firebase.auth().currentUser?.getIdToken(true)
+      console.log(token)
+      if (token) {
+        localStorage.setItem('@token', token)
+      }
+
       if (!data.user) {
         console.log('none user data')
         return
