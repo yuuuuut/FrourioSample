@@ -1,19 +1,22 @@
-import useAspidaSWR from '@aspida/swr'
+import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/dist/client/router'
-import { useEffect, useState } from 'react'
-import useSWR from 'swr'
-import { UserShow } from '~/server/types'
+
 import { apiClient } from '~/utils/apiClient'
+import { UserShow } from '~/server/types'
 
+/**
+ * Main
+ */
 const ShowUser = () => {
-  const [page, setPgae] = useState(1)
-
   const router = useRouter()
-  console.log(router.query)
 
   const [id, setId] = useState<string>()
+  const [page, setPgae] = useState(1)
   const [userShow, setUserShow] = useState({} as UserShow)
 
+  /**
+   * Userを取得します。
+   */
   const getUser = async (id: string) => {
     try {
       const token = localStorage.getItem('@token')
@@ -34,14 +37,19 @@ const ShowUser = () => {
     }
   }
 
+  /**
+   *
+   */
   useEffect(() => {
     if (router.asPath !== router.route) {
-      console.log(router.query)
       const id = router.query.id as string
       setId(id)
     }
   }, [router])
 
+  /**
+   *
+   */
   useEffect(() => {
     if (id) {
       getUser(id)
