@@ -1,11 +1,8 @@
-import { useCallback, useState } from 'react'
-import Link from 'next/link'
+import { useState } from 'react'
 
-import { apiClient } from '~/utils/apiClient'
 import type { Todo } from '$prisma/client'
 
-import Modal from '../uis/Modal'
-import { useRouter } from 'next/dist/client/router'
+import TodoDetailButton from './TodoDetailButton'
 import TodoDetailDate from './TodoDetailDate'
 
 /**
@@ -19,26 +16,9 @@ type Props = {
  * Main
  */
 const TodoDetail = (props: Props) => {
-  const router = useRouter()
-
   const { todo } = props
 
   const [isOpen, setIsOpen] = useState(false)
-
-  const updateTodo = useCallback(async (todo: Todo) => {
-    const token = localStorage.getItem('@token')
-
-    if (!token) {
-      console.error('Tokenが存在しません。')
-      return
-    }
-
-    const res = await apiClient.todos
-      ._todoId(todo.id)
-      .patch({ body: { done: !todo.done }, headers: { authorization: token } })
-    console.log(res)
-    router.push(`/todos/${todo.id}`)
-  }, [])
 
   return (
     <tr key={todo.id}>
@@ -84,33 +64,10 @@ const TodoDetail = (props: Props) => {
           </span>
         )}
       </td>
+
       <TodoDetailDate todo={todo} />
       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-        <Modal
-          title={'Todoの更新'}
-          describe={'Todoを完了済みにしますか?'}
-          isOpen={isOpen}
-          setIsOpen={setIsOpen}
-          okClickFn={() => updateTodo(todo)}
-        />
-        {todo.done ? (
-          <Link href={`/todos/${todo.id}`}>
-            <button
-              type="submit"
-              className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-400 hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-300"
-            >
-              詳細
-            </button>
-          </Link>
-        ) : (
-          <button
-            type="submit"
-            className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-            onClick={() => setIsOpen(true)}
-          >
-            更新
-          </button>
-        )}
+        <TodoDetailButton todo={todo} isOpen={isOpen} setIsOpen={setIsOpen} />
       </td>
     </tr>
   )

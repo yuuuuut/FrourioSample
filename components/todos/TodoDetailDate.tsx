@@ -10,12 +10,18 @@ type Props = {
   todo: Todo
 }
 
+type DefaultStyleColor = 'gray' | 'red' | 'purple'
+
 /**
  * Main
  */
 const TodoDetailDate = (props: Props) => {
   const format = 'YYYY-MM-DD'
   const { todo } = props
+
+  const defaultStyle = (color: DefaultStyleColor) => {
+    return `px-6 py-4 whitespace-nowrap text-sm text-${color}-600`
+  }
 
   /**
    * 期日が一日後のTodoの場合、trueを返す。
@@ -40,7 +46,7 @@ const TodoDetailDate = (props: Props) => {
   return (
     <>
       {todo.done && (
-        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+        <td className={defaultStyle('gray')}>
           <Moment format={format}>{todo.due_date}</Moment>
         </td>
       )}
@@ -48,13 +54,13 @@ const TodoDetailDate = (props: Props) => {
       {!todo.done && (
         <>
           {checkOverDay(todo.due_date) && (
-            <td className="px-6 py-4 whitespace-nowrap text-sm text-purple-600">
+            <td className={defaultStyle('purple')}>
               <Moment format={format}>{todo.due_date}</Moment>
               <p>期日が過ぎたタスクです。</p>
             </td>
           )}
           {checkLimitOneDay(todo.due_date) && (
-            <td className="px-6 py-4 whitespace-nowrap text-sm text-red-600">
+            <td className={defaultStyle('red')}>
               <Moment format={format}>{todo.due_date}</Moment>
               <p>期日が明日までのタスクです。</p>
             </td>
@@ -62,7 +68,7 @@ const TodoDetailDate = (props: Props) => {
         </>
       )}
 
-      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+      <td className={defaultStyle('gray')}>
         <Moment format={format}>{todo.createdAt}</Moment>
       </td>
     </>
