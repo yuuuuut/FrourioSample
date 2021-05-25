@@ -1,5 +1,8 @@
 import type { Todo } from '$prisma/client'
 
+import { CalendarIcon } from '@heroicons/react/outline'
+import moment from 'moment'
+
 import TodoDetail from './TodoDetail'
 
 /**
@@ -27,7 +30,7 @@ const TodoList = (props: Props) => {
                     scope="col"
                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                   >
-                    Todo
+                    タスク名
                   </th>
                   <th
                     scope="col"
@@ -40,6 +43,12 @@ const TodoList = (props: Props) => {
                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                   >
                     期日
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    作成日
                   </th>
                   <th scope="col" className="relative px-6 py-3">
                     <span className="sr-only">Edit</span>
