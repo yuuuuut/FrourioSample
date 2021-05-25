@@ -95,14 +95,6 @@ const Home = () => {
     [title, startDate]
   )
 
-  const updateTodo = useCallback(async (todo: Todo) => {
-    const res = await apiClient.todos
-      ._todoId(todo.id)
-      .patch({ body: { done: !todo.done } })
-    console.log(res)
-    revalidate()
-  }, [])
-
   /*
   const toggleDone = useCallback(async (task: Task) => {
     await apiClient.tasks._taskId(task.id).patch({ body: { done: !task.done } })
@@ -156,11 +148,6 @@ const Home = () => {
             {todos.map((todo) => (
               <li key={todo.id}>
                 <label>
-                  <input
-                    type="checkbox"
-                    checked={todo.done}
-                    onChange={() => updateTodo(todo)}
-                  />
                   <span>{todo.title}</span>
                 </label>
               </li>

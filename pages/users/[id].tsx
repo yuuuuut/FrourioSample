@@ -1,19 +1,28 @@
-import useAspidaSWR from '@aspida/swr'
+import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/dist/client/router'
-import { useEffect, useState } from 'react'
-import useSWR from 'swr'
-import { UserShow } from '~/server/types'
+
 import { apiClient } from '~/utils/apiClient'
+import { UserShow } from '~/server/types'
 
+import UserShowHeader from '~/components/users/UserShowHeader'
+import TodoList from '~/components/todos/TodoList'
+
+import type { Todo } from '$prisma/client'
+
+/**
+ * Main
+ */
 const ShowUser = () => {
-  const [page, setPgae] = useState(1)
-
   const router = useRouter()
-  console.log(router.query)
 
   const [id, setId] = useState<string>()
+  const [page, setPgae] = useState(1)
   const [userShow, setUserShow] = useState({} as UserShow)
+  const [userTodos, setUserTodos] = useState<Todo[]>([])
 
+  /**
+   * Userを取得します。
+   */
   const getUser = async (id: string) => {
     try {
       const token = localStorage.getItem('@token')
@@ -29,26 +38,49 @@ const ShowUser = () => {
       console.log(res)
 
       setUserShow(res.body.user)
+
+      if (res.body.user.todos) setUserTodos(res.body.user.todos)
     } catch (err) {
       console.log(err.response)
     }
   }
 
+  /**
+   *
+   */
   useEffect(() => {
     if (router.asPath !== router.route) {
-      console.log(router.query)
       const id = router.query.id as string
       setId(id)
     }
   }, [router])
 
+  /**
+   *
+   */
   useEffect(() => {
     if (id) {
       getUser(id)
     }
   }, [id])
 
-  return <div>{userShow ? <h1>{userShow.id}</h1> : <div>Not User</div>}</div>
+  return (
+    <div>
+      {userShow ? (
+        <div>
+          <div className="my-8 text-center md:my-4">
+            <UserShowHeader
+              displayName={userShow.displayName}
+              photoUrl={userShow.photoUrl}
+            />
+          </div>
+          <TodoList todos={userTodos} />
+        </div>
+      ) : (
+        <div>Not User</div>
+      )}
+    </div>
+  )
 }
 
 export default ShowUser
