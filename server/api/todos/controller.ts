@@ -8,7 +8,7 @@ export default defineController(() => ({
       const page = query?.page || 1
       const skip = query?.page === 1 ? 0 : take * (page - 1)
 
-      const todos = await indexTodo(take, skip)
+      const todos = await indexTodo('A', take, skip)
 
       return { status: 200, body: todos }
     } catch (error) {

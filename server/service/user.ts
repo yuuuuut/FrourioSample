@@ -17,15 +17,9 @@ export const indexUser = async (take: number, skip: number) => {
 /**
  * show
  */
-export const showUser = async (userId: string, take: number, skip: number) => {
+export const showUser = async (userId: string) => {
   const user = await prisma.user.findUnique({
-    where: { id: userId },
-    include: {
-      todos: {
-        take,
-        skip
-      }
-    }
+    where: { id: userId }
   })
   if (!user)
     throw Object.assign(new Error('ユーザーが存在しません。'), { status: 404 })

@@ -10,8 +10,9 @@ import { TodoCreateBody, TodoUpdateBody } from '$/types'
 /**
  * index
  */
-export const indexTodo = async (take: number, skip: number) => {
+export const indexTodo = async (userId: string, take: number, skip: number) => {
   const todos = await prisma.todo.findMany({
+    where: { userId },
     take,
     skip
   })

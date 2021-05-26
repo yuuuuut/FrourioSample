@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/dist/client/router'
 
+import type { Todo } from '$prisma/client'
 import { apiClient } from '~/utils/apiClient'
 import { UserShow } from '~/server/types'
 
 import UserShowHeader from '~/components/users/UserShowHeader'
 import TodoList from '~/components/todos/TodoList'
-
-import type { Todo } from '$prisma/client'
 
 /**
  * Main
@@ -32,17 +31,24 @@ const ShowUser = () => {
         return
       }
 
-      const res = await apiClient.user
+      const resUser = await apiClient.user
         ._userId(id)
-        .get({ query: { page }, headers: { authorization: token } })
-      console.log(res)
+        .get({ headers: { authorization: token } })
 
-      setUserShow(res.body.user)
+      const resTodos = await apiClient.user
+        ._userId(id)
+        .todos.get({ query: { page }, headers: { authorization: token } })
 
-      if (res.body.user.todos) setUserTodos(res.body.user.todos)
+      setUserShow(resUser.body.user)
+      setUserTodos(userTodos.concat(resTodos.body.todos))
     } catch (err) {
       console.log(err.response)
     }
+  }
+
+  const addTodos = () => {
+    const addPage = page + 1
+    setPgae(addPage)
   }
 
   /**
@@ -62,7 +68,7 @@ const ShowUser = () => {
     if (id) {
       getUser(id)
     }
-  }, [id])
+  }, [id, page])
 
   return (
     <div>
@@ -75,6 +81,7 @@ const ShowUser = () => {
             />
           </div>
           <TodoList todos={userTodos} />
+          <button onClick={addTodos}>Add Todo</button>
         </div>
       ) : (
         <div>Not User</div>
