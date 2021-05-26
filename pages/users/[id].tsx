@@ -18,6 +18,7 @@ const ShowUser = () => {
   const [page, setPgae] = useState(1)
   const [userShow, setUserShow] = useState({} as UserShow)
   const [userTodos, setUserTodos] = useState<Todo[]>([])
+  const [notTodos, setNotTodos] = useState(false)
 
   /**
    * Userを取得します。
@@ -35,11 +36,33 @@ const ShowUser = () => {
         ._userId(id)
         .get({ headers: { authorization: token } })
 
+      setUserShow(resUser.body.user)
+    } catch (err) {
+      console.log(err.response)
+    }
+  }
+
+  /**
+   * Todoの配列を取得します。
+   */
+  const getTodos = async (id: string) => {
+    try {
+      const token = localStorage.getItem('@token')
+
+      if (!token) {
+        console.error('Tokenが存在しません。')
+        return
+      }
+
       const resTodos = await apiClient.user
         ._userId(id)
         .todos.get({ query: { page }, headers: { authorization: token } })
 
-      setUserShow(resUser.body.user)
+      if (!resTodos.body.todos.length) {
+        setNotTodos(true)
+        return
+      }
+
       setUserTodos(userTodos.concat(resTodos.body.todos))
     } catch (err) {
       console.log(err.response)
@@ -52,7 +75,7 @@ const ShowUser = () => {
   }
 
   /**
-   *
+   * router が変更されたら
    */
   useEffect(() => {
     if (router.asPath !== router.route) {
@@ -62,11 +85,20 @@ const ShowUser = () => {
   }, [router])
 
   /**
-   *
+   * id が変更されたら
    */
   useEffect(() => {
     if (id) {
       getUser(id)
+    }
+  }, [id])
+
+  /**
+   * id か page が変更されたら
+   */
+  useEffect(() => {
+    if (id) {
+      getTodos(id)
     }
   }, [id, page])
 
@@ -81,7 +113,11 @@ const ShowUser = () => {
             />
           </div>
           <TodoList todos={userTodos} />
-          <button onClick={addTodos}>Add Todo</button>
+          {notTodos ? (
+            <div>これ以上Todoが存在しません!!</div>
+          ) : (
+            <button onClick={addTodos}>Add Todo</button>
+          )}
         </div>
       ) : (
         <div>Not User</div>
