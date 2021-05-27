@@ -2,7 +2,7 @@ import { defineController } from './$relay'
 import { showUser } from '$/service/user'
 
 export default defineController(() => ({
-  get: async ({ params, query, currentUserUid }) => {
+  get: async ({ params, currentUserUid }) => {
     try {
       if (params.userId !== currentUserUid) {
         throw Object.assign(new Error('権限のないユーザーです。'), {
@@ -10,11 +10,7 @@ export default defineController(() => ({
         })
       }
 
-      const take = 5
-      const page = query?.page || 1
-      const skip = query?.page === 1 ? 0 : take * (page - 1)
-
-      const user = await showUser(params.userId, take, skip)
+      const user = await showUser(params.userId)
       return { status: 200, body: { user } }
     } catch (error) {
       return { status: error.status || 500, body: { error: error.message } }

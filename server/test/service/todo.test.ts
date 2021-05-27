@@ -43,7 +43,7 @@ describe('indexTodo() - unit', () => {
     const skip = 0
     const take = 5
 
-    await expect(todoService.indexTodo(take, skip)).resolves.toEqual(todos)
+    await expect(todoService.indexTodo('A', take, skip)).resolves.toEqual(todos)
     expect(mockFn).toHaveBeenCalledWith({ skip, take })
     expect(mockFn.mock.calls[0][0]?.skip).toBe(skip)
     expect(mockFn.mock.calls[0][0]?.take).toBe(take)

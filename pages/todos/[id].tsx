@@ -11,6 +11,7 @@ const ShowTodo = () => {
   console.log(router.query)
 
   const [id, setId] = useState<string>()
+  const [ogpLoad, setOgpLoad] = useState(true)
   const [todoShow, setTodoShow] = useState({} as TodoShow)
 
   const getTodo = async (id: number) => {
@@ -28,6 +29,7 @@ const ShowTodo = () => {
       console.log(res)
 
       setTodoShow(res.body.todo)
+      setOgpLoad(false)
     } catch (err) {
       console.log(err.response)
     }
@@ -51,11 +53,18 @@ const ShowTodo = () => {
   return (
     <div>
       {todoShow ? (
-        <div>
-          <h1>{todoShow.id}</h1>
-          <p>{todoShow.title}</p>
-          <p>{todoShow.due_date}</p>
-        </div>
+        <section className="hero container max-w-screen-lg mx-auto pb-10 mt-5 flex">
+          {ogpLoad ? (
+            <div>OGP Loading...</div>
+          ) : (
+            <img
+              className="mx-auto"
+              width="430"
+              height="300"
+              src={`https://firebasestorage.googleapis.com/v0/b/${process.env.NEXT_PUBLIC_STORAGEBUCKET}/o/ogps%2F${id}.png?alt=media&token=${id}`}
+            />
+          )}
+        </section>
       ) : (
         <div>Not Todo</div>
       )}

@@ -13,8 +13,11 @@ import type { Todo } from '$prisma/client'
 
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
+import { useRouter } from 'next/dist/client/router'
 
 const Home = () => {
+  const router = useRouter()
+
   const [page, setPgae] = useState(1)
   const {
     data: todos,
@@ -61,6 +64,8 @@ const Home = () => {
 
       const user = await apiClient.user.post({ body })
       console.log(user)
+
+      router.push(`/users/${user.body.user.id}`)
     } catch (err) {
       console.log(err)
     }
