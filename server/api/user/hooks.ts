@@ -8,7 +8,9 @@ export type AdditionalRequest = {
 
 export default defineHooks(() => ({
   onRequest: async (req, res, next) => {
-    if (req.method === 'POST') {
+    console.log(req.path)
+    if (req.path === '/api/user' && req.method === 'POST') {
+      console.log('Pass')
       next()
       return
     }

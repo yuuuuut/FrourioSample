@@ -18,16 +18,6 @@ import { useRouter } from 'next/dist/client/router'
 const Home = () => {
   const router = useRouter()
 
-  const [page, setPgae] = useState(1)
-  const {
-    data: todos,
-    error,
-    revalidate
-  } = useAspidaSWR(apiClient.todos, {
-    query: { page }
-  })
-  console.log(todos)
-
   const [title, setTitle] = useState('')
   const [startDate, setStartDate] = useState<Date | null>(new Date())
 
@@ -84,6 +74,21 @@ const Home = () => {
       })
   }, [])
 
+  const a = async () => {
+    const token = localStorage.getItem('@token')
+
+    if (!token) {
+      console.error('Tokenが存在しません。')
+      return
+    }
+
+    const res = await apiClient.user
+      ._userId('1')
+      .relationships.post({ headers: { authorization: token } })
+
+    console.log(res)
+  }
+
   const createTodo = useCallback(
     async (e: FormEvent) => {
       e.preventDefault()
@@ -116,9 +121,6 @@ const Home = () => {
 
   */
 
-  if (error) return <div>failed to load</div>
-  if (!todos) return <div>loading...</div>
-
   return (
     <div className={styles.container}>
       <Head>
@@ -127,14 +129,9 @@ const Home = () => {
       </Head>
 
       <main className={styles.main}>
-        <UserBanner />
-
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
-
         <p className={styles.description}>frourio-todo-app</p>
 
+        <button onClick={a}>Follow</button>
         <button onClick={login}>Login</button>
         <button onClick={logout}>Logout</button>
 
@@ -148,16 +145,6 @@ const Home = () => {
             />
             <input type="submit" value="ADD" />
           </form>
-
-          <ul>
-            {todos.map((todo) => (
-              <li key={todo.id}>
-                <label>
-                  <span>{todo.title}</span>
-                </label>
-              </li>
-            ))}
-          </ul>
         </div>
       </main>
     </div>

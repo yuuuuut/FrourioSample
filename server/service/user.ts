@@ -41,3 +41,19 @@ export const createUser = async (body: UserCreateBody) => {
 
   return user
 }
+
+/**
+ * follow
+ */
+export const followUser = async (userId: string, currentUserUid: string) => {
+  console.log(currentUserUid)
+
+  await prisma.user.update({
+    where: { id: userId },
+    data: {
+      following: {
+        connect: { id: currentUserUid }
+      }
+    }
+  })
+}
