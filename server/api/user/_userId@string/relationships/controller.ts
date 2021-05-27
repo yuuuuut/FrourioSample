@@ -1,4 +1,4 @@
-import { followUser } from '$/service/user'
+import { followUser, unfollowUser } from '$/service/user'
 import { defineController } from './$relay'
 
 export default defineController(() => ({
@@ -8,7 +8,18 @@ export default defineController(() => ({
 
       return { status: 201, body: { message: 'フォロー申請を送りました。' } }
     } catch (error) {
-      console.log(error.message)
+      return { status: 500, body: { error } }
+    }
+  },
+  delete: async ({ params, currentUserUid }) => {
+    try {
+      await unfollowUser(params.userId, currentUserUid)
+
+      return {
+        status: 201,
+        body: { message: 'フォロー申請を取り下げました。' }
+      }
+    } catch (error) {
       return { status: 500, body: { error } }
     }
   }

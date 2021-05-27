@@ -89,6 +89,21 @@ const Home = () => {
     console.log(res)
   }
 
+  const b = async () => {
+    const token = localStorage.getItem('@token')
+
+    if (!token) {
+      console.error('Tokenが存在しません。')
+      return
+    }
+
+    const res = await apiClient.user
+      ._userId('1')
+      .relationships.delete({ headers: { authorization: token } })
+
+    console.log(res)
+  }
+
   const createTodo = useCallback(
     async (e: FormEvent) => {
       e.preventDefault()
@@ -132,6 +147,7 @@ const Home = () => {
         <p className={styles.description}>frourio-todo-app</p>
 
         <button onClick={a}>Follow</button>
+        <button onClick={b}>unFollow</button>
         <button onClick={login}>Login</button>
         <button onClick={logout}>Logout</button>
 
