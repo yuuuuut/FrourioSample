@@ -69,11 +69,6 @@ const ShowUser = () => {
     }
   }
 
-  const addTodos = () => {
-    const addPage = page + 1
-    setPgae(addPage)
-  }
-
   /**
    * router が変更されたら
    */
@@ -113,11 +108,18 @@ const ShowUser = () => {
             />
           </div>
           <TodoList todos={userTodos} />
-          {notTodos ? (
-            <div>これ以上Todoが存在しません!!</div>
-          ) : (
-            <button onClick={addTodos}>Add Todo</button>
-          )}
+          <div className="my-8 text-center md:my-4">
+            {notTodos ? (
+              <div>Todoが存在しません</div>
+            ) : (
+              <button
+                onClick={() => setPgae(page + 1)}
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded inline-flex items-center"
+              >
+                <span>Todoをもっとみる</span>
+              </button>
+            )}
+          </div>
         </div>
       ) : (
         <div>Not User</div>
