@@ -46,10 +46,12 @@ export const createUser = async (body: UserCreateBody) => {
  * follow
  */
 export const followUser = async (userId: string, currentUserUid: string) => {
+  //const a = await isFolloing(userId, currentUserUid)
+
   await prisma.user.update({
     where: { id: userId },
     data: {
-      following: {
+      followed: {
         connect: { id: currentUserUid }
       }
     }
@@ -61,11 +63,23 @@ export const followUser = async (userId: string, currentUserUid: string) => {
  */
 export const unfollowUser = async (userId: string, currentUserUid: string) => {
   await prisma.user.update({
-    where: { id: userId },
+    where: { id: currentUserUid },
     data: {
       following: {
-        disconnect: { id: currentUserUid }
+        disconnect: { id: userId }
       }
     }
   })
+}
+
+const isFolloing = async (userId: string, currentUserUid: string) => {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    include: { followed: true }
+  })
+  if (!user) return
+
+  const bool = user.followed.some((u) => u.id === currentUserUid)
+
+  return bool
 }

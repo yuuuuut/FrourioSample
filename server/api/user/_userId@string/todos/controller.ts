@@ -2,9 +2,15 @@ import { indexTodo } from '$/service/todo'
 import { defineController } from './$relay'
 
 export default defineController(() => ({
-  get: async ({ query, params }) => {
+  get: async ({ query, params, currentUserUid }) => {
     try {
       const userId = params.userId
+
+      if (userId !== currentUserUid) {
+        throw Object.assign(new Error('権限のないユーザーです。'), {
+          status: 403
+        })
+      }
 
       const take = 5
       const page = query?.page || 1
