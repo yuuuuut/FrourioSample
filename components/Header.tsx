@@ -7,7 +7,7 @@ import Link from 'next/link'
 /**
  * Tailwind Setting
  */
-const navigation = ['友達一覧', '友達検索', '友達申請', 'Calendar', 'Reports']
+const navigation = ['友達一覧', '友達検索', '友達申請']
 const profile = ['Your Profile', 'Settings', 'Sign out']
 
 function classNames(...classes: string[]) {
@@ -34,24 +34,36 @@ export default function Header() {
                 </div>
                 <div className="hidden md:block">
                   <div className="ml-10 flex items-baseline space-x-4">
-                    {navigation.map((item, itemIdx) =>
-                      itemIdx === 1 ? (
-                        <div
-                          key={item}
-                          className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
-                        >
-                          <Link href="/users/search">{item}</Link>
-                        </div>
-                      ) : (
-                        <a
-                          key={item}
-                          href="#"
-                          className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
-                        >
-                          {item}
-                        </a>
-                      )
-                    )}
+                    {navigation.map((item, itemIdx) => (
+                      <div key={item}>
+                        {itemIdx === 0 && (
+                          <div
+                            key={item}
+                            className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+                          >
+                            <Link href="/users/search">{item}</Link>
+                          </div>
+                        )}
+                        {itemIdx === 1 && (
+                          <div
+                            key={item}
+                            className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+                          >
+                            <Link href="/users/search">{item}</Link>
+                          </div>
+                        )}
+                        {itemIdx === 2 && (
+                          <div
+                            key={item}
+                            className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+                          >
+                            <Link href="/users/siKgxnMy0YgQc6Gk7leRYnAU7xc2/requests">
+                              {item}
+                            </Link>
+                          </div>
+                        )}
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>

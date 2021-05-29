@@ -45,11 +45,21 @@ export const createUser = async (body: UserCreateBody) => {
 }
 
 /**
+ * followers
+ */
+export const followers = async (userId: string) => {
+  const followers = await prisma.user.findMany({
+    where: { id: userId },
+    include: { followed: true }
+  })
+
+  return followers
+}
+
+/**
  * follow
  */
 export const followUser = async (userId: string, currentUserUid: string) => {
-  //const a = await isFolloing(userId, currentUserUid)
-
   await prisma.user.update({
     where: { id: userId },
     data: {
