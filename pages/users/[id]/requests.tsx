@@ -1,13 +1,20 @@
 import { useEffect, useState } from 'react'
-import { apiClient } from '~/utils/apiClient'
 
+import { apiClient } from '~/utils/apiClient'
 import { RequestShow } from '~/server/types'
+
 import UserCard from '~/components/users/UserCard'
 
-const UserRelationships = () => {
+/**
+ * Main
+ */
+const RequestIndex = () => {
   const [requests, setRequests] = useState<RequestShow[]>([])
 
-  const getFollowers = async () => {
+  /**
+   * Requestの配列を取得する。
+   */
+  const getRequests = async () => {
     try {
       const token = localStorage.getItem('@token')
 
@@ -22,14 +29,16 @@ const UserRelationships = () => {
 
       console.log(res)
       setRequests(res.body.requests)
-      //setUsers(res.body.users)
     } catch (err) {
       console.log(err.response)
     }
   }
 
+  /**
+   *
+   */
   useEffect(() => {
-    getFollowers()
+    getRequests()
   }, [])
 
   return (
@@ -37,7 +46,7 @@ const UserRelationships = () => {
       {requests.length ? (
         requests.map((r) => (
           <div key={r.id}>
-            <UserCard user={r.visiterUser!} />
+            <UserCard user={r.visiterUser!} type={'PERMIT'} />
           </div>
         ))
       ) : (
@@ -47,4 +56,4 @@ const UserRelationships = () => {
   )
 }
 
-export default UserRelationships
+export default RequestIndex

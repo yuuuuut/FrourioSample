@@ -1,4 +1,4 @@
-import { createRequest, indexRequest } from '$/service/request'
+import { updateRequest, createRequest, indexRequest } from '$/service/request'
 import { defineController } from './$relay'
 
 export default defineController(() => ({
@@ -18,6 +18,17 @@ export default defineController(() => ({
       await createRequest(userId, currentUserUid)
 
       return { status: 201, body: { message: '友達申請を送りました。' } }
+    } catch (error) {
+      return { status: 500, body: { error } }
+    }
+  },
+  patch: async ({ params, currentUserUid }) => {
+    try {
+      const userId = params.userId
+
+      await updateRequest(userId, currentUserUid)
+
+      return { status: 201, body: { message: '友達申請を許可しました。' } }
     } catch (error) {
       return { status: 500, body: { error } }
     }

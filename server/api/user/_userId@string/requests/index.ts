@@ -9,4 +9,8 @@ export type Methods = {
     reqHeaders: AuthHeader
     resBody: { message: string }
   }
+  patch: {
+    reqHeaders: AuthHeader
+    resBody: { message: string }
+  }
 }
