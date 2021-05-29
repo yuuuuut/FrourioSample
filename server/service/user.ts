@@ -48,12 +48,14 @@ export const createUser = async (body: UserCreateBody) => {
  * followers
  */
 export const followers = async (userId: string) => {
-  const followers = await prisma.user.findMany({
+  const user = await prisma.user.findUnique({
     where: { id: userId },
-    include: { followed: true }
+    include: { followed: {} }
   })
+  if (!user)
+    throw Object.assign(new Error('ユーザーが存在しません。'), { status: 404 })
 
-  return followers
+  return user.followed
 }
 
 /**

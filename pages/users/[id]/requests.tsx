@@ -1,7 +1,12 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { apiClient } from '~/utils/apiClient'
 
+import type { User } from '$prisma/client'
+import UserCard from '~/components/users/UserCard'
+
 const UserRelationships = () => {
+  const [users, setUsers] = useState<User[]>([])
+
   const getFollowers = async () => {
     try {
       const token = localStorage.getItem('@token')
@@ -16,6 +21,7 @@ const UserRelationships = () => {
         .relationships.get({ headers: { authorization: token } })
 
       console.log(res)
+      setUsers(res.body.users)
     } catch (err) {
       console.log(err.response)
     }
@@ -27,7 +33,15 @@ const UserRelationships = () => {
 
   return (
     <>
-      <div>User Request</div>
+      {users.length ? (
+        users.map((user) => (
+          <div key={user.id}>
+            <UserCard user={user} />
+          </div>
+        ))
+      ) : (
+        <div>None User</div>
+      )}
     </>
   )
 }
