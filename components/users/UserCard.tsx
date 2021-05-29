@@ -20,7 +20,7 @@ const UserCard = (props: Props) => {
 
       const resUser = await apiClient.user
         ._userId(userId)
-        .relationships.post({ headers: { authorization: token } })
+        .requests.post({ headers: { authorization: token } })
 
       //setIsFollow(true)
       console.log(resUser)

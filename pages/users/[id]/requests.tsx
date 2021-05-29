@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react'
 import { apiClient } from '~/utils/apiClient'
 
-import type { User } from '$prisma/client'
+import { RequestShow } from '~/server/types'
 import UserCard from '~/components/users/UserCard'
 
 const UserRelationships = () => {
-  const [users, setUsers] = useState<User[]>([])
+  const [requests, setRequests] = useState<RequestShow[]>([])
 
   const getFollowers = async () => {
     try {
@@ -18,10 +18,11 @@ const UserRelationships = () => {
 
       const res = await apiClient.user
         ._userId('siKgxnMy0YgQc6Gk7leRYnAU7xc2')
-        .relationships.get({ headers: { authorization: token } })
+        .requests.get({ headers: { authorization: token } })
 
       console.log(res)
-      setUsers(res.body.users)
+      setRequests(res.body.requests)
+      //setUsers(res.body.users)
     } catch (err) {
       console.log(err.response)
     }
@@ -33,10 +34,10 @@ const UserRelationships = () => {
 
   return (
     <>
-      {users.length ? (
-        users.map((user) => (
-          <div key={user.id}>
-            <UserCard user={user} />
+      {requests.length ? (
+        requests.map((r) => (
+          <div key={r.id}>
+            <UserCard user={r.visiterUser!} />
           </div>
         ))
       ) : (
