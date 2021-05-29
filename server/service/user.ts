@@ -17,14 +17,16 @@ export const indexUser = async (take: number, skip: number) => {
 /**
  * show
  */
-export const showUser = async (userId: string) => {
+export const showUser = async (userId: string, currentUserUid: string) => {
   const user = await prisma.user.findUnique({
     where: { id: userId }
   })
   if (!user)
     throw Object.assign(new Error('ユーザーが存在しません。'), { status: 404 })
 
-  return user
+  const isFollow = await isFolloing(user.id, currentUserUid)
+
+  return { user, isFollow }
 }
 
 /**
@@ -77,7 +79,8 @@ const isFolloing = async (userId: string, currentUserUid: string) => {
     where: { id: userId },
     include: { followed: true }
   })
-  if (!user) return
+  if (!user)
+    throw Object.assign(new Error('ユーザーが存在しません。'), { status: 404 })
 
   const bool = user.followed.some((u) => u.id === currentUserUid)
 

@@ -15,8 +15,8 @@ export default defineController(() => ({
         }
       }
 
-      const user = await showUser(userId)
-      return { status: 200, body: { user } }
+      const { user, isFollow } = await showUser(userId, currentUserUid)
+      return { status: 200, body: { user, isFollow } }
     } catch (error) {
       return { status: error.status || 500, body: { error: error.message } }
     }

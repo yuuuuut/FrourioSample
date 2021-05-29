@@ -6,6 +6,7 @@ import { UserShow } from '~/server/types'
 const SearchUser = () => {
   const [id, setId] = useState('')
   const [userShow, setUserShow] = useState<UserShow | null>()
+  const [isFollow, setIsFollow] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
 
   const inputId = useCallback(
@@ -20,6 +21,7 @@ const SearchUser = () => {
     try {
       setErrorMessage('')
       setUserShow(null)
+      setIsFollow(false)
 
       const token = localStorage.getItem('@token')
 
@@ -28,13 +30,14 @@ const SearchUser = () => {
         return
       }
 
-      const resUser = await apiClient.user
+      const res = await apiClient.user
         ._userId(id)
         .get({ query: { type: 'search' }, headers: { authorization: token } })
 
-      console.log(resUser)
+      console.log(res)
 
-      setUserShow(resUser.body.user)
+      setUserShow(res.body.user)
+      setIsFollow(res.body.isFollow)
     } catch (err) {
       switch (err.response.status) {
         case 404:
@@ -44,6 +47,26 @@ const SearchUser = () => {
           console.log(err.response)
           break
       }
+    }
+  }
+
+  const follow = async (userId: string) => {
+    try {
+      const token = localStorage.getItem('@token')
+
+      if (!token) {
+        console.error('Tokenが存在しません。')
+        return
+      }
+
+      const resUser = await apiClient.user
+        ._userId(userId)
+        .relationships.post({ headers: { authorization: token } })
+
+      setIsFollow(true)
+      console.log(resUser)
+    } catch (err) {
+      console.log(err)
     }
   }
 
@@ -62,7 +85,8 @@ const SearchUser = () => {
         <div className="col-start-2 col-span-4 sm:col-start-5 sm:col-span-1 sm:mt-5">
           <button
             onClick={() => getUser(id)}
-            className="w-full flex-shrink-0 px-4 py-2 text-base font-semibold text-white bg-purple-600 rounded-lg shadow-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-purple-200"
+            className={`w-full flex-shrink-0 px-4 py-2 text-base font-semibold text-white bg-purple-600 rounded-lg shadow-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-purple-200`}
+            disabled={!id}
             type="submit"
           >
             検索
@@ -94,9 +118,21 @@ const SearchUser = () => {
                 <p className="text-2xl">{userShow.displayName}</p>
               </div>
               <div className="mx-auto col-start-1 sm:col-start-2 md:col-start-4 md:col-span-2">
-                <button className="px-4 py-1 text-sm text-purple-600 font-semibold rounded-full border border-purple-200 hover:text-white hover:bg-purple-600 hover:border-transparent focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-offset-2">
-                  友達申請
-                </button>
+                {isFollow ? (
+                  <button
+                    className="px-4 py-1 text-sm text-purple-600 font-semibold rounded-full border border-purple-200 disabled:opacity-60"
+                    disabled
+                  >
+                    申請済み
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => follow(userShow.id)}
+                    className="px-4 py-1 text-sm text-purple-600 font-semibold rounded-full border border-purple-200 hover:text-white hover:bg-purple-600 hover:border-transparent focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-offset-2"
+                  >
+                    友達申請
+                  </button>
+                )}
               </div>
             </div>
           )}

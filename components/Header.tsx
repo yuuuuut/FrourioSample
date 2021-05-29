@@ -2,11 +2,12 @@ import React, { Fragment } from 'react'
 
 import { Disclosure, Menu, Transition } from '@headlessui/react'
 import { BellIcon, MenuIcon, XIcon } from '@heroicons/react/outline'
+import Link from 'next/link'
 
 /**
  * Tailwind Setting
  */
-const navigation = ['Dashboard', 'Team', 'Projects', 'Calendar', 'Reports']
+const navigation = ['友達一覧', '友達検索', '友達申請', 'Calendar', 'Reports']
 const profile = ['Your Profile', 'Settings', 'Sign out']
 
 function classNames(...classes: string[]) {
@@ -34,16 +35,13 @@ export default function Header() {
                 <div className="hidden md:block">
                   <div className="ml-10 flex items-baseline space-x-4">
                     {navigation.map((item, itemIdx) =>
-                      itemIdx === 0 ? (
-                        <Fragment key={item}>
-                          {/* Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" */}
-                          <a
-                            href="#"
-                            className="bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium"
-                          >
-                            {item}
-                          </a>
-                        </Fragment>
+                      itemIdx === 1 ? (
+                        <div
+                          key={item}
+                          className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+                        >
+                          <Link href="/users/search">{item}</Link>
+                        </div>
                       ) : (
                         <a
                           key={item}
@@ -64,7 +62,6 @@ export default function Header() {
                     <BellIcon className="h-6 w-6" aria-hidden="true" />
                   </button>
 
-                  {/* Profile dropdown */}
                   <Menu as="div" className="ml-3 relative">
                     {({ open }) => (
                       <>
@@ -115,7 +112,6 @@ export default function Header() {
                 </div>
               </div>
               <div className="-mr-2 flex md:hidden">
-                {/* Mobile menu button */}
                 <Disclosure.Button className="bg-gray-800 inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
                   <span className="sr-only">Open main menu</span>
                   {open ? (
@@ -133,7 +129,6 @@ export default function Header() {
               {navigation.map((item, itemIdx) =>
                 itemIdx === 0 ? (
                   <Fragment key={item}>
-                    {/* Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" */}
                     <a
                       href="#"
                       className="bg-gray-900 text-white block px-3 py-2 rounded-md text-base font-medium"
