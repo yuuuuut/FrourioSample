@@ -12,9 +12,9 @@ type Props = {
  */
 export default function Layout({ children }: Props) {
   return (
-    <div>
+    <>
       <Header />
       <main>{children}</main>
-    </div>
+    </>
   )
 }
