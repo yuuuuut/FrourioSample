@@ -1,14 +1,17 @@
-import { followers, followUser, unfollowUser } from '$/service/user'
+import {
+  followers,
+  createRelationship,
+  unfollowUser,
+  indexRelationship
+} from '$/service/user'
 import { defineController } from './$relay'
 
 export default defineController(() => ({
-  get: async ({ params }) => {
+  get: async ({ currentUserUid }) => {
     try {
-      const userId = params.userId
+      const users = await indexRelationship(currentUserUid)
 
-      const users = await followers(userId)
-
-      return { status: 201, body: { users } }
+      return { status: 200, body: { users } }
     } catch (error) {
       return { status: 500, body: { error } }
     }
@@ -17,7 +20,7 @@ export default defineController(() => ({
     try {
       const userId = params.userId
 
-      await followUser(userId, currentUserUid)
+      await createRelationship(userId, currentUserUid)
 
       return { status: 201, body: { message: 'フォロー申請を送りました。' } }
     } catch (error) {

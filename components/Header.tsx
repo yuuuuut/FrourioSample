@@ -41,7 +41,9 @@ export default function Header() {
                             key={item}
                             className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
                           >
-                            <Link href="/users/search">{item}</Link>
+                            <Link href="/users/siKgxnMy0YgQc6Gk7leRYnAU7xc2/relationships">
+                              {item}
+                            </Link>
                           </div>
                         )}
                         {itemIdx === 1 && (
