@@ -16,8 +16,20 @@ model User {
   photoUrl     String
   todos        Todo[]
   profile      Profile?
-  followed     User[] @relation("relationships", references: [id])
-  following    User[] @relation("relationships", references: [id])
+  followed     User[]  @relation("relationships", references: [id])
+  following    User[]  @relation("relationships", references: [id])
+  request1     Request[] @relation("visiter")
+  request2     Request[] @relation("visited")
+}
+
+model Request {
+  @@map(name: "requests")
+  id            Int    @id @default(autoincrement())
+  visiterId     String
+  visitedId     String
+  isPermit      Boolean    @default(false)
+  visiterUser   User       @relation("visiter", fields: [visiterId], references: [id])
+  visitedUser   User       @relation("visited", fields: [visitedId], references: [id])
 }
 
 model Todo {
