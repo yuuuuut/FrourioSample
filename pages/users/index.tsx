@@ -18,6 +18,7 @@ const IndexUser = () => {
   */
 
   const [id, setId] = useState('')
+  const [isFriend, setIsFriend] = useState(false)
   const [isRequest, setIsRequest] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
   const [userShow, setUserShow] = useState<UserShow | null>()
@@ -38,6 +39,7 @@ const IndexUser = () => {
       setErrorMessage('')
       setUserShow(null)
       setIsRequest(false)
+      setIsFriend(false)
 
       const token = localStorage.getItem('@token')
 
@@ -53,7 +55,8 @@ const IndexUser = () => {
       console.log(res)
 
       setUserShow(res.body.user)
-      setIsRequest(res.body.isRequest)
+      setIsFriend(res.body.isFollowing)
+      setIsRequest(res.body.isRequestBool)
     } catch (err) {
       switch (err.response.status) {
         case 404:
@@ -126,7 +129,7 @@ const IndexUser = () => {
       {userShow && (
         <UserCard
           user={userShow}
-          types={{ type: 'REQUEST', isRequest, requestCreate }}
+          types={{ type: 'REQUEST', isFriend, isRequest, requestCreate }}
         />
       )}
     </>

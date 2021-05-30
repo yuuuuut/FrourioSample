@@ -16,7 +16,7 @@ export const indexRequest = async (userId: string) => {
 /**
  * show
  */
-export const showRequest = async (userId: string, currentUserUid: string) => {
+export const isRequest = async (userId: string, currentUserUid: string) => {
   const request = await prisma.request.findFirst({
     where: {
       visiterId: currentUserUid,
@@ -24,7 +24,9 @@ export const showRequest = async (userId: string, currentUserUid: string) => {
     }
   })
 
-  return request
+  const bool = Boolean(request)
+
+  return bool
 }
 
 /**

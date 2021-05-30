@@ -11,6 +11,7 @@ type Props = {
   types:
     | {
         type: 'REQUEST'
+        isFriend: boolean
         isRequest: boolean
         requestCreate: (userId: string) => Promise<void>
       }
@@ -55,7 +56,9 @@ const UserCard = (props: Props) => {
                   </button>
                 )}
                 {types.type === 'REQUEST' &&
-                  (types.isRequest ? (
+                  (types.isFriend ? (
+                    <div>友達です。</div>
+                  ) : types.isRequest ? (
                     <button
                       className="px-4 py-1 text-sm text-purple-600 font-semibold rounded-full border border-purple-200 disabled:opacity-50"
                       disabled

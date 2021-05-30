@@ -68,6 +68,27 @@ export const indexRelationship = async (currentUserUid: string) => {
   return user.following
 }
 
+export const isRelationship = async (
+  userId: string,
+  currentUserUid: string
+) => {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    include: {
+      followed: {
+        where: { id: currentUserUid }
+      }
+    }
+  })
+
+  if (!user)
+    throw Object.assign(new Error('ユーザーが存在しません。'), { status: 404 })
+
+  const bool = user.followed.length === 0 ? false : true
+
+  return bool
+}
+
 /**
  * follow
  */
