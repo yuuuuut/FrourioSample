@@ -1,5 +1,6 @@
 import { defineController } from './$relay'
 import { showUser } from '$/service/user'
+import { showRequest } from '$/service/request'
 
 export default defineController(() => ({
   get: async ({ params, query, currentUserUid }) => {
@@ -15,8 +16,10 @@ export default defineController(() => ({
         }
       }
 
-      const { user, isFollow } = await showUser(userId, currentUserUid)
-      return { status: 200, body: { user, isFollow } }
+      const user = await showUser(userId, currentUserUid)
+      const isRequest = await showRequest(userId, currentUserUid)
+
+      return { status: 200, body: { user, isRequest: Boolean(isRequest) } }
     } catch (error) {
       return { status: error.status || 500, body: { error: error.message } }
     }

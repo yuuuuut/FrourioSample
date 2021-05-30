@@ -24,9 +24,7 @@ export const showUser = async (userId: string, currentUserUid: string) => {
   if (!user)
     throw Object.assign(new Error('ユーザーが存在しません。'), { status: 404 })
 
-  const isFollow = await isFolloing(user.id, currentUserUid)
-
-  return { user, isFollow }
+  return user
 }
 
 /**
@@ -84,17 +82,4 @@ export const unfollowUser = async (userId: string, currentUserUid: string) => {
       }
     }
   })
-}
-
-const isFolloing = async (userId: string, currentUserUid: string) => {
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-    include: { followed: true }
-  })
-  if (!user)
-    throw Object.assign(new Error('ユーザーが存在しません。'), { status: 404 })
-
-  const bool = user.followed.some((u) => u.id === currentUserUid)
-
-  return bool
 }

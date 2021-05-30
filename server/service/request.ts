@@ -13,6 +13,20 @@ export const indexRequest = async (userId: string) => {
 }
 
 /**
+ * show
+ */
+export const showRequest = async (userId: string, currentUserUid: string) => {
+  const request = await prisma.request.findFirst({
+    where: {
+      visiterId: currentUserUid,
+      visitedId: userId
+    }
+  })
+
+  return request
+}
+
+/**
  * create
  */
 export const createRequest = async (userId: string, currentUserUid: string) => {

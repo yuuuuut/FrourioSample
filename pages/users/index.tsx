@@ -18,9 +18,9 @@ const IndexUser = () => {
   */
 
   const [id, setId] = useState('')
-  const [userShow, setUserShow] = useState<UserShow | null>()
-  const [isFollow, setIsFollow] = useState(false)
+  const [isRequest, setIsRequest] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
+  const [userShow, setUserShow] = useState<UserShow | null>()
 
   /**
    * id input event
@@ -37,7 +37,7 @@ const IndexUser = () => {
     try {
       setErrorMessage('')
       setUserShow(null)
-      setIsFollow(false)
+      setIsRequest(false)
 
       const token = localStorage.getItem('@token')
 
@@ -53,7 +53,7 @@ const IndexUser = () => {
       console.log(res)
 
       setUserShow(res.body.user)
-      setIsFollow(res.body.isFollow)
+      setIsRequest(res.body.isRequest)
     } catch (err) {
       switch (err.response.status) {
         case 404:
@@ -63,6 +63,26 @@ const IndexUser = () => {
           console.log(err.response)
           break
       }
+    }
+  }
+
+  const requestCreate = async (userId: string) => {
+    try {
+      const token = localStorage.getItem('@token')
+
+      if (!token) {
+        console.error('Tokenが存在しません。')
+        return
+      }
+
+      const res = await apiClient.user
+        ._userId(userId)
+        .requests.post({ headers: { authorization: token } })
+
+      setIsRequest(true)
+      console.log(res)
+    } catch (err) {
+      console.log(err)
     }
   }
 
@@ -90,10 +110,10 @@ const IndexUser = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-8 sm:grid-cols-6 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-5 gap-1">
         {errorMessage && (
-          <div className="col-start-1 col-span-8 sm:col-start-2 sm:col-span-4 mt-5">
-            <div className="bg-red-200 px-6 py-4 mx-2 my-4 rounded-md text-lg flex items-center mx-auto w-3/4 xl:w-2/4">
+          <div className="col-start-1 sm:col-start-2 sm:col-span-3 mt-5">
+            <div className="bg-red-200 px-6 py-4 mx-2 my-4 rounded-md text-sm flex items-center mx-auto w-3/4 xl:w-2/4">
               <span className="text-red-800">
                 {' '}
                 ユーザーが見つかりませんでした。IDを確認してください。{' '}
@@ -103,7 +123,12 @@ const IndexUser = () => {
         )}
       </div>
 
-      {userShow && <UserCard user={userShow} type={'REQUEST'} />}
+      {userShow && (
+        <UserCard
+          user={userShow}
+          types={{ type: 'REQUEST', isRequest, requestCreate }}
+        />
+      )}
     </>
   )
 }

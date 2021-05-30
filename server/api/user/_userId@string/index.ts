@@ -6,6 +6,6 @@ export type Methods = {
       type: 'search'
     }
     reqHeaders: AuthHeader
-    resBody: { user: UserShow; isFollow: boolean }
+    resBody: { user: UserShow; isRequest: boolean }
   }
 }

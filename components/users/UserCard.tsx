@@ -1,6 +1,4 @@
-import { useState } from 'react'
 import { UserShow } from '~/server/types'
-import { apiClient } from '~/utils/apiClient'
 
 // Default Icon Image URL
 const defaultIconImageURL = `https://firebasestorage.googleapis.com/v0/b/${process.env.NEXT_PUBLIC_STORAGEBUCKET}/o/default-icon.png?alt=media&token=${process.env.NEXT_PUBLIC_DEFAULT_ICON_TOKEN}`
@@ -10,57 +8,23 @@ const defaultIconImageURL = `https://firebasestorage.googleapis.com/v0/b/${proce
  */
 type Props = {
   user: UserShow
-  type: 'REQUEST' | 'PERMIT'
-  isRequest?: boolean
+  types:
+    | {
+        type: 'REQUEST'
+        isRequest: boolean
+        requestCreate: (userId: string) => Promise<void>
+      }
+    | {
+        type: 'PERMIT'
+        updateRequest: (userId: string) => Promise<void>
+      }
 }
 
 /**
  * Main
  */
 const UserCard = (props: Props) => {
-  const { user, type } = props
-
-  const [isRequest, setIsRequest] = useState(false)
-
-  const requestCreate = async (userId: string) => {
-    try {
-      const token = localStorage.getItem('@token')
-
-      if (!token) {
-        console.error('Tokenが存在しません。')
-        return
-      }
-
-      const res = await apiClient.user
-        ._userId(userId)
-        .requests.post({ headers: { authorization: token } })
-
-      setIsRequest(true)
-      console.log(res)
-    } catch (err) {
-      console.log(err)
-    }
-  }
-
-  const updateRequest = async (userId: string) => {
-    try {
-      const token = localStorage.getItem('@token')
-
-      if (!token) {
-        console.error('Tokenが存在しません。')
-        return
-      }
-
-      const resUser = await apiClient.user
-        ._userId(userId)
-        .requests.patch({ headers: { authorization: token } })
-
-      //setIsFollow(true)
-      console.log(resUser)
-    } catch (err) {
-      console.log(err)
-    }
-  }
+  const { user, types } = props
 
   return (
     <>
@@ -82,18 +46,17 @@ const UserCard = (props: Props) => {
                 <p className="text-2xl">{user.displayName}</p>
               </div>
               <div className="mx-auto col-start-1 sm:col-start-2 md:col-start-4 md:col-span-2">
-                {type === 'PERMIT' && (
+                {types.type === 'PERMIT' && (
                   <button
-                    onClick={() => updateRequest(user.id)}
+                    onClick={() => types.updateRequest(user.id)}
                     className="px-4 py-1 text-sm text-purple-600 font-semibold rounded-full border border-purple-200 hover:text-white hover:bg-purple-600 hover:border-transparent focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-offset-2"
                   >
                     友達になる
                   </button>
                 )}
-                {type === 'REQUEST' &&
-                  (isRequest ? (
+                {types.type === 'REQUEST' &&
+                  (types.isRequest ? (
                     <button
-                      onClick={() => requestCreate(user.id)}
                       className="px-4 py-1 text-sm text-purple-600 font-semibold rounded-full border border-purple-200 disabled:opacity-50"
                       disabled
                     >
@@ -101,7 +64,7 @@ const UserCard = (props: Props) => {
                     </button>
                   ) : (
                     <button
-                      onClick={() => requestCreate(user.id)}
+                      onClick={() => types.requestCreate(user.id)}
                       className="px-4 py-1 text-sm text-purple-600 font-semibold rounded-full border border-purple-200 hover:text-white hover:bg-purple-600 hover:border-transparent focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-offset-2"
                     >
                       友達申請
