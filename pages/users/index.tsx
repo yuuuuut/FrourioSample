@@ -4,6 +4,7 @@ import { apiClient } from '~/utils/apiClient'
 import { UserShow } from '~/server/types'
 
 import UserCard from '~/components/users/UserCard'
+import NotData from '~/components/uis/NotData'
 
 /**
  * Main
@@ -117,18 +118,12 @@ const Index = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-5 gap-1">
-        {errorMessage && (
-          <div className="col-start-1 sm:col-start-2 sm:col-span-3 mt-5">
-            <div className="bg-red-200 px-6 py-4 mx-2 my-4 rounded-md text-sm flex items-center mx-auto w-3/4 xl:w-2/4">
-              <span className="text-red-800">
-                {' '}
-                ユーザーが見つかりませんでした。IDを確認してください。{' '}
-              </span>
-            </div>
-          </div>
-        )}
-      </div>
+      {errorMessage && (
+        <NotData
+          describe={'ユーザーが存在しません。IDを確認してください。'}
+          iconKind={{ name: 'EmojiSadIcon' }}
+        />
+      )}
 
       {userShow && (
         <UserCard

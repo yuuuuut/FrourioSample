@@ -61,24 +61,26 @@ const Show = () => {
   }, [id])
 
   return (
-    <div>
+    <>
       {todoShow ? (
-        <section className="hero container max-w-screen-lg mx-auto pb-10 mt-5 flex">
-          {ogpLoad ? (
-            <div>OGP Loading...</div>
-          ) : (
-            <img
-              className="mx-auto"
-              width="430"
-              height="300"
-              src={`https://firebasestorage.googleapis.com/v0/b/${process.env.NEXT_PUBLIC_STORAGEBUCKET}/o/ogps%2F${id}.png?alt=media&token=${id}`}
-            />
-          )}
-        </section>
+        <div className="grid grid-cols-1 gap-1">
+          <div className="col-start-1 mt-5">
+            {ogpLoad ? (
+              <div className="border border-light-blue-300 shadow rounded-md p-4 max-w-sm w-full mx-auto">
+                <div className="animate-pulse flex space-x-4"></div>
+              </div>
+            ) : (
+              <img
+                className="mx-auto w-3/4 sm:w-1/2"
+                src={`https://firebasestorage.googleapis.com/v0/b/${process.env.NEXT_PUBLIC_STORAGEBUCKET}/o/ogps%2F${id}.png?alt=media&token=${id}`}
+              />
+            )}
+          </div>
+        </div>
       ) : (
         <div>Not Todo</div>
       )}
-    </div>
+    </>
   )
 }
 

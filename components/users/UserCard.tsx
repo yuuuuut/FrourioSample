@@ -19,6 +19,9 @@ type Props = {
         type: 'PERMIT'
         updateRequest: (userId: string) => Promise<void>
       }
+    | {
+        type: 'FRIEND'
+      }
 }
 
 /**

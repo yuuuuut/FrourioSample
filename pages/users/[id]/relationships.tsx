@@ -1,7 +1,12 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/dist/client/router'
 
 import { apiClient } from '~/utils/apiClient'
+
+import type { User } from '$prisma/client'
+
+import UserCard from '~/components/users/UserCard'
+import NotData from '~/components/uis/NotData'
 
 /**
  * Main
@@ -9,6 +14,10 @@ import { apiClient } from '~/utils/apiClient'
 const Index = () => {
   // router
   const router = useRouter()
+  const id = router.query.id as string
+
+  // states
+  const [users, setUsers] = useState<User[]>([])
 
   /**
    * Relationshipの配列を取得します。
@@ -22,13 +31,13 @@ const Index = () => {
         return
       }
 
-      const id = router.query.id as string
-
-      const resUser = await apiClient.user
+      const res = await apiClient.user
         ._userId(id)
         .relationships.get({ headers: { authorization: token } })
 
-      console.log(resUser)
+      console.log(res)
+
+      setUsers(res.body.users)
     } catch (err) {
       console.log(err)
     }
@@ -38,7 +47,22 @@ const Index = () => {
     getRelationships()
   }, [])
 
-  return <div>A</div>
+  return (
+    <>
+      {users.length !== 0 ? (
+        users.map((user) => (
+          <div key={user.id}>
+            <UserCard user={user} types={{ type: 'FRIEND' }} />
+          </div>
+        ))
+      ) : (
+        <NotData
+          describe={'友達はいません。'}
+          iconKind={{ name: 'ExclamationCircleIcon' }}
+        />
+      )}
+    </>
+  )
 }
 
 export default Index

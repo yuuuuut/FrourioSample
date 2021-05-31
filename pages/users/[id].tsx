@@ -6,6 +6,7 @@ import { UserShow } from '~/server/types'
 
 import UserShowHeader from '~/components/users/UserShowHeader'
 import TodoList from '~/components/todos/TodoList'
+import NotData from '~/components/uis/NotData'
 
 import type { Todo } from '$prisma/client'
 
@@ -101,19 +102,25 @@ const Show = () => {
   }, [id, page])
 
   return (
-    <div>
+    <>
       {userShow ? (
-        <div>
-          <div className="my-8 text-center md:my-4">
+        <div className="grid grid-cols-1 gap-4">
+          <div className="grid-start-1 mt-5 mx-auto">
             <UserShowHeader
               displayName={userShow.displayName}
               photoUrl={userShow.photoUrl}
             />
           </div>
-          <TodoList todos={userTodos} />
-          <div className="my-8 text-center md:my-4">
+          <div className="grid grid-cols-1 gap-4 overflow-auto">
+            <TodoList todos={userTodos} />
+          </div>
+
+          <div className="grid-start-1 mb-3 mx-auto">
             {notTodos ? (
-              <div>Todoが存在しません</div>
+              <NotData
+                describe={'Todoは存在しません。'}
+                iconKind={{ name: 'NotIcon' }}
+              />
             ) : (
               <button
                 onClick={() => setPgae(page + 1)}
@@ -127,7 +134,7 @@ const Show = () => {
       ) : (
         <div>Not User</div>
       )}
-    </div>
+    </>
   )
 }
 
