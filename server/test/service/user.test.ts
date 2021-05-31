@@ -67,8 +67,6 @@ describe('showUser() - unit', () => {
 
     prismaMock.user.findUnique.mockResolvedValue(user)
 
-    //prismaMock.user.findUnique.mockImplementation((async () => user) as any)
-
     await expect(userService.showUser(user.id)).resolves.toEqual({
       ...user
     })
