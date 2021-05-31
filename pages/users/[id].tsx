@@ -1,24 +1,27 @@
 import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/dist/client/router'
 
-import type { Todo } from '$prisma/client'
 import { apiClient } from '~/utils/apiClient'
 import { UserShow } from '~/server/types'
 
 import UserShowHeader from '~/components/users/UserShowHeader'
 import TodoList from '~/components/todos/TodoList'
 
+import type { Todo } from '$prisma/client'
+
 /**
  * Main
  */
-const ShowUser = () => {
+const Show = () => {
+  // router
   const router = useRouter()
 
+  // states
   const [id, setId] = useState<string>()
   const [page, setPgae] = useState(1)
+  const [notTodos, setNotTodos] = useState(false)
   const [userShow, setUserShow] = useState({} as UserShow)
   const [userTodos, setUserTodos] = useState<Todo[]>([])
-  const [notTodos, setNotTodos] = useState(false)
 
   /**
    * Userを取得します。
@@ -128,4 +131,4 @@ const ShowUser = () => {
   )
 }
 
-export default ShowUser
+export default Show

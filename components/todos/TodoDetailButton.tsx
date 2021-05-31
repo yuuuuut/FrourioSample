@@ -4,6 +4,7 @@ import Link from 'next/link'
 
 import { apiClient } from '~/utils/apiClient'
 import type { Todo } from '$prisma/client'
+
 import Modal from '../uis/Modal'
 
 /**
@@ -49,7 +50,7 @@ const TodoDetailButton = (props: Props) => {
         describe={'Todoを完了済みにしますか?'}
         isOpen={isOpen}
         setIsOpen={setIsOpen}
-        okClickFn={() => updateTodo(todo)}
+        usePlace={{ place: 'TODO_DETAIL', todo, updateTodo }}
       />
       {todo.done ? (
         <Link href={`/todos/${todo.id}`}>

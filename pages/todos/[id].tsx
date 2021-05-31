@@ -1,19 +1,24 @@
-import useAspidaSWR from '@aspida/swr'
-import { useRouter } from 'next/dist/client/router'
 import { useEffect, useState } from 'react'
-import useSWR from 'swr'
-import { TodoShow } from '~/server/types'
-import { apiClient } from '~/utils/apiClient'
+import { useRouter } from 'next/dist/client/router'
 
-const ShowTodo = () => {
+import { apiClient } from '~/utils/apiClient'
+import { TodoShow } from '~/server/types'
+
+/**
+ * Main
+ */
+const Show = () => {
+  // router
   const router = useRouter()
 
-  console.log(router.query)
-
+  // states
   const [id, setId] = useState<string>()
   const [ogpLoad, setOgpLoad] = useState(true)
   const [todoShow, setTodoShow] = useState({} as TodoShow)
 
+  /**
+   * Todoを取得します。
+   */
   const getTodo = async (id: number) => {
     try {
       const token = localStorage.getItem('@token')
@@ -35,14 +40,19 @@ const ShowTodo = () => {
     }
   }
 
+  /**
+   * router が変更されたら
+   */
   useEffect(() => {
     if (router.asPath !== router.route) {
-      console.log(router.query)
       const id = router.query.id as string
       setId(id)
     }
   }, [router])
 
+  /**
+   * id が変更されたら
+   */
   useEffect(() => {
     if (id) {
       const todoId = Number(id)
@@ -72,4 +82,4 @@ const ShowTodo = () => {
   )
 }
 
-export default ShowTodo
+export default Show

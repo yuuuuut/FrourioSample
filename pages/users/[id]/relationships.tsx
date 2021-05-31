@@ -1,10 +1,18 @@
-import { useRouter } from 'next/dist/client/router'
 import { useEffect } from 'react'
+import { useRouter } from 'next/dist/client/router'
+
 import { apiClient } from '~/utils/apiClient'
 
-const RelationshipsIndex = () => {
+/**
+ * Main
+ */
+const Index = () => {
+  // router
   const router = useRouter()
 
+  /**
+   * Relationshipの配列を取得します。
+   */
   const getRelationships = async () => {
     try {
       const token = localStorage.getItem('@token')
@@ -33,4 +41,4 @@ const RelationshipsIndex = () => {
   return <div>A</div>
 }
 
-export default RelationshipsIndex
+export default Index

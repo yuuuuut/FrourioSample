@@ -5,7 +5,10 @@ import { UserShow } from '~/server/types'
 
 import UserCard from '~/components/users/UserCard'
 
-const IndexUser = () => {
+/**
+ * Main
+ */
+const Index = () => {
   /*
   const [page, setPgae] = useState(1)
   const { data, error, revalidate } = useAspidaSWR(apiClient.user, {
@@ -17,6 +20,7 @@ const IndexUser = () => {
   if (!data?.users) return <div>loading...</div>
   */
 
+  // states
   const [id, setId] = useState('')
   const [isFriend, setIsFriend] = useState(false)
   const [isRequest, setIsRequest] = useState(false)
@@ -136,4 +140,4 @@ const IndexUser = () => {
   )
 }
 
-export default IndexUser
+export default Index

@@ -4,12 +4,14 @@ import { apiClient } from '~/utils/apiClient'
 import { RequestShow } from '~/server/types'
 
 import UserCard from '~/components/users/UserCard'
+
 import { ExclamationCircleIcon } from '@heroicons/react/outline'
 
 /**
  * Main
  */
-const RequestIndex = () => {
+const Index = () => {
+  // states
   const [requests, setRequests] = useState<RequestShow[]>([])
 
   /**
@@ -92,4 +94,4 @@ const RequestIndex = () => {
   )
 }
 
-export default RequestIndex
+export default Index
