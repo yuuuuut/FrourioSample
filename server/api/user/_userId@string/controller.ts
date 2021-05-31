@@ -1,6 +1,8 @@
 import { defineController } from './$relay'
-import { isRelationship, showUser } from '$/service/user'
+
+import { isRelationship } from '$/service/relationship'
 import { isRequest } from '$/service/request'
+import { showUser } from '$/service/user'
 
 export default defineController(() => ({
   get: async ({ params, query, currentUserUid }) => {
@@ -16,7 +18,7 @@ export default defineController(() => ({
         }
       }
 
-      const user = await showUser(userId, currentUserUid)
+      const user = await showUser(userId)
       const isRequestBool = await isRequest(userId, currentUserUid)
       const isFollowing = await isRelationship(userId, currentUserUid)
 

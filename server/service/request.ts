@@ -1,5 +1,4 @@
 import prisma from '$/prisma/prisma'
-import { createRelationship } from './user'
 
 /**
  * index
@@ -11,22 +10,6 @@ export const indexRequest = async (userId: string) => {
   })
 
   return requests
-}
-
-/**
- * show
- */
-export const isRequest = async (userId: string, currentUserUid: string) => {
-  const request = await prisma.request.findFirst({
-    where: {
-      visiterId: currentUserUid,
-      visitedId: userId
-    }
-  })
-
-  const bool = Boolean(request)
-
-  return bool
 }
 
 /**
@@ -72,4 +55,20 @@ export const updateRequest = async (userId: string, currentUserUid: string) => {
       }
     })
   ])
+}
+
+/**
+ * Requestが存在するかどうかをBooleanで返します。
+ */
+export const isRequest = async (userId: string, currentUserUid: string) => {
+  const request = await prisma.request.findFirst({
+    where: {
+      visiterId: currentUserUid,
+      visitedId: userId
+    }
+  })
+
+  const bool = Boolean(request)
+
+  return bool
 }

@@ -1,5 +1,6 @@
-import { updateRequest, createRequest, indexRequest } from '$/service/request'
 import { defineController } from './$relay'
+
+import { updateRequest, createRequest, indexRequest } from '$/service/request'
 
 export default defineController(() => ({
   get: async ({ currentUserUid }) => {
