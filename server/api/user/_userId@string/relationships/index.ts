@@ -6,12 +6,4 @@ export type Methods = {
     reqHeaders: AuthHeader
     resBody: { users: User[] }
   }
-  post: {
-    reqHeaders: AuthHeader
-    resBody: { message: string }
-  }
-  delete: {
-    reqHeaders: AuthHeader
-    resBody: { message: string }
-  }
 }
