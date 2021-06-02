@@ -1,15 +1,11 @@
 import Head from 'next/head'
 import { useCallback, useState } from 'react'
-import useAspidaSWR from '@aspida/swr'
 import styles from '~/styles/Home.module.css'
 import { apiClient } from '~/utils/apiClient'
-import UserBanner from '~/components/UserBanner'
 
 import firebase from '~/utils/firebase'
 
 import type { FormEvent, ChangeEvent } from 'react'
-
-import type { Todo } from '$prisma/client'
 
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
@@ -74,36 +70,6 @@ const Home = () => {
       })
   }, [])
 
-  const a = async () => {
-    const token = localStorage.getItem('@token')
-
-    if (!token) {
-      console.error('Tokenが存在しません。')
-      return
-    }
-
-    const res = await apiClient.user
-      ._userId('1')
-      .relationships.post({ headers: { authorization: token } })
-
-    console.log(res)
-  }
-
-  const b = async () => {
-    const token = localStorage.getItem('@token')
-
-    if (!token) {
-      console.error('Tokenが存在しません。')
-      return
-    }
-
-    const res = await apiClient.user
-      ._userId('1')
-      .relationships.delete({ headers: { authorization: token } })
-
-    console.log(res)
-  }
-
   const createTodo = useCallback(
     async (e: FormEvent) => {
       e.preventDefault()
@@ -146,8 +112,6 @@ const Home = () => {
       <main className={styles.main}>
         <p className={styles.description}>frourio-todo-app</p>
 
-        <button onClick={a}>Follow</button>
-        <button onClick={b}>unFollow</button>
         <button onClick={login}>Login</button>
         <button onClick={logout}>Logout</button>
 
