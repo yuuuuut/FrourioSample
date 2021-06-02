@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/dist/client/router'
+import Head from 'next/head'
 
 import { apiClient } from '~/utils/apiClient'
 import { TodoShow } from '~/server/types'
@@ -62,6 +63,16 @@ const Show = () => {
 
   return (
     <>
+      <Head>
+        <meta property="description" content={'Hoge'} />
+        <meta property="og:title" content={'Fuga'} />
+        <meta property="og:description" content={'Geha'} />
+        <meta
+          property="og:image"
+          content={`https://firebasestorage.googleapis.com/v0/b/${process.env.NEXT_PUBLIC_STORAGEBUCKET}/o/ogps%2F${id}.png?alt=media&token=${id}`}
+        />
+        <meta name="twitter:card" content="summary_large_image" />
+      </Head>
       {todoShow ? (
         <div className="grid grid-cols-1 gap-1">
           <div className="col-start-1 mt-5">
