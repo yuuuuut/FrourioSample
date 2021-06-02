@@ -1,19 +1,25 @@
-import useAspidaSWR from '@aspida/swr'
-import { useRouter } from 'next/dist/client/router'
 import { useEffect, useState } from 'react'
-import useSWR from 'swr'
-import { TodoShow } from '~/server/types'
-import { apiClient } from '~/utils/apiClient'
+import { useRouter } from 'next/dist/client/router'
+import Head from 'next/head'
 
-const ShowTodo = () => {
+import { apiClient } from '~/utils/apiClient'
+import { TodoShow } from '~/server/types'
+
+/**
+ * Main
+ */
+const Show = () => {
+  // router
   const router = useRouter()
 
-  console.log(router.query)
-
+  // states
   const [id, setId] = useState<string>()
   const [ogpLoad, setOgpLoad] = useState(true)
   const [todoShow, setTodoShow] = useState({} as TodoShow)
 
+  /**
+   * Todoを取得します。
+   */
   const getTodo = async (id: number) => {
     try {
       const token = localStorage.getItem('@token')
@@ -35,14 +41,19 @@ const ShowTodo = () => {
     }
   }
 
+  /**
+   * router が変更されたら
+   */
   useEffect(() => {
     if (router.asPath !== router.route) {
-      console.log(router.query)
       const id = router.query.id as string
       setId(id)
     }
   }, [router])
 
+  /**
+   * id が変更されたら
+   */
   useEffect(() => {
     if (id) {
       const todoId = Number(id)
@@ -51,25 +62,37 @@ const ShowTodo = () => {
   }, [id])
 
   return (
-    <div>
+    <>
+      <Head>
+        <meta property="description" content={'Hoge'} />
+        <meta property="og:title" content={'Fuga'} />
+        <meta property="og:description" content={'Geha'} />
+        <meta
+          property="og:image"
+          content={`https://firebasestorage.googleapis.com/v0/b/${process.env.NEXT_PUBLIC_STORAGEBUCKET}/o/ogps%2F${id}.png?alt=media&token=${id}`}
+        />
+        <meta name="twitter:card" content="summary_large_image" />
+      </Head>
       {todoShow ? (
-        <section className="hero container max-w-screen-lg mx-auto pb-10 mt-5 flex">
-          {ogpLoad ? (
-            <div>OGP Loading...</div>
-          ) : (
-            <img
-              className="mx-auto"
-              width="430"
-              height="300"
-              src={`https://firebasestorage.googleapis.com/v0/b/${process.env.NEXT_PUBLIC_STORAGEBUCKET}/o/ogps%2F${id}.png?alt=media&token=${id}`}
-            />
-          )}
-        </section>
+        <div className="grid grid-cols-1 gap-1">
+          <div className="col-start-1 mt-5">
+            {ogpLoad ? (
+              <div className="border border-light-blue-300 shadow rounded-md p-4 max-w-sm w-full mx-auto">
+                <div className="animate-pulse flex space-x-4"></div>
+              </div>
+            ) : (
+              <img
+                className="mx-auto w-3/4 sm:w-1/2"
+                src={`https://firebasestorage.googleapis.com/v0/b/${process.env.NEXT_PUBLIC_STORAGEBUCKET}/o/ogps%2F${id}.png?alt=media&token=${id}`}
+              />
+            )}
+          </div>
+        </div>
       ) : (
         <div>Not Todo</div>
       )}
-    </div>
+    </>
   )
 }
 
-export default ShowTodo
+export default Show

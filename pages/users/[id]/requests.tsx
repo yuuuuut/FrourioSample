@@ -4,12 +4,14 @@ import { apiClient } from '~/utils/apiClient'
 import { RequestShow } from '~/server/types'
 
 import UserCard from '~/components/users/UserCard'
-import { ExclamationCircleIcon } from '@heroicons/react/outline'
+
+import NotData from '~/components/uis/NotData'
 
 /**
  * Main
  */
-const RequestIndex = () => {
+const Index = () => {
+  // states
   const [requests, setRequests] = useState<RequestShow[]>([])
 
   /**
@@ -76,20 +78,13 @@ const RequestIndex = () => {
           </div>
         ))
       ) : (
-        <div className="grid grid-cols-1 gap-4">
-          <div className="mx-auto mt-10 col-start-1" />
-          <div className="mx-auto col-start-1">
-            <ExclamationCircleIcon className="h-20 w-20 text-gray-400" />
-          </div>
-          <div className="mx-auto col-start-1">
-            <p className="font-bold text-xl text-gray-400">
-              友達申請はありません。
-            </p>
-          </div>
-        </div>
+        <NotData
+          describe={'友達申請はありません。'}
+          iconKind={{ name: 'ExclamationCircleIcon' }}
+        />
       )}
     </>
   )
 }
 
-export default RequestIndex
+export default Index

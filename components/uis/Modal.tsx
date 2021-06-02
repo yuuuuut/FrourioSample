@@ -1,4 +1,4 @@
-import { Dispatch, Fragment, SetStateAction, useRef } from 'react'
+import { Dispatch, Fragment, SetStateAction } from 'react'
 
 import { ClipboardCheckIcon } from '@heroicons/react/outline'
 import { Dialog, Transition } from '@headlessui/react'
@@ -13,18 +13,25 @@ type Props = {
   describe: string
   isOpen: boolean
   setIsOpen: Dispatch<SetStateAction<boolean>>
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  okClickFn: Function
+  usePlace: {
+    place: 'TODO_DETAIL'
+    todo: Todo
+    updateTodo: (todo: Todo) => Promise<void>
+  }
 }
 
 /**
  * Main
  */
 const Modal = (props: Props) => {
-  const { title, describe, isOpen, setIsOpen, okClickFn } = props
+  const { title, describe, isOpen, setIsOpen, usePlace } = props
 
-  const clickOKButton = async () => {
-    await okClickFn()
+  const clickButton = async () => {
+    switch (usePlace.place) {
+      case 'TODO_DETAIL':
+        await usePlace.updateTodo(usePlace.todo)
+    }
+
     setIsOpen(false)
   }
 
@@ -37,7 +44,7 @@ const Modal = (props: Props) => {
         open={isOpen}
         onClose={setIsOpen}
       >
-        <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <div className="flex items-end justify-center pt-20 px-4 text-center sm:block sm:p-0">
           <Transition.Child
             as={Fragment}
             enter="ease-out duration-300"
@@ -90,7 +97,7 @@ const Modal = (props: Props) => {
                 <button
                   type="button"
                   className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm"
-                  onClick={clickOKButton}
+                  onClick={clickButton}
                 >
                   更新
                 </button>

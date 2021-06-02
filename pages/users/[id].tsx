@@ -1,24 +1,28 @@
 import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/dist/client/router'
 
-import type { Todo } from '$prisma/client'
 import { apiClient } from '~/utils/apiClient'
 import { UserShow } from '~/server/types'
 
 import UserShowHeader from '~/components/users/UserShowHeader'
 import TodoList from '~/components/todos/TodoList'
+import NotData from '~/components/uis/NotData'
+
+import type { Todo } from '$prisma/client'
 
 /**
  * Main
  */
-const ShowUser = () => {
+const Show = () => {
+  // router
   const router = useRouter()
 
+  // states
   const [id, setId] = useState<string>()
   const [page, setPgae] = useState(1)
+  const [notTodos, setNotTodos] = useState(false)
   const [userShow, setUserShow] = useState({} as UserShow)
   const [userTodos, setUserTodos] = useState<Todo[]>([])
-  const [notTodos, setNotTodos] = useState(false)
 
   /**
    * Userを取得します。
@@ -98,19 +102,25 @@ const ShowUser = () => {
   }, [id, page])
 
   return (
-    <div>
+    <>
       {userShow ? (
-        <div>
-          <div className="my-8 text-center md:my-4">
+        <div className="grid grid-cols-1 gap-4">
+          <div className="grid-start-1 mt-5 mx-auto">
             <UserShowHeader
               displayName={userShow.displayName}
               photoUrl={userShow.photoUrl}
             />
           </div>
-          <TodoList todos={userTodos} />
-          <div className="my-8 text-center md:my-4">
+          <div className="grid grid-cols-1 gap-4 overflow-auto">
+            <TodoList todos={userTodos} />
+          </div>
+
+          <div className="grid-start-1 mb-3 mx-auto">
             {notTodos ? (
-              <div>Todoが存在しません</div>
+              <NotData
+                describe={'Todoは存在しません。'}
+                iconKind={{ name: 'NotIcon' }}
+              />
             ) : (
               <button
                 onClick={() => setPgae(page + 1)}
@@ -124,8 +134,8 @@ const ShowUser = () => {
       ) : (
         <div>Not User</div>
       )}
-    </div>
+    </>
   )
 }
 
-export default ShowUser
+export default Show
