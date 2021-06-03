@@ -1,16 +1,20 @@
 import { useEffect, useState } from 'react'
 
+import { useAuthentication } from '~/utils/authentication'
 import { apiClient } from '~/utils/apiClient'
-import { RequestShow } from '~/server/types'
 
 import UserCard from '~/components/users/UserCard'
-
 import NotData from '~/components/uis/NotData'
+
+import { RequestShow } from '~/server/types'
 
 /**
  * Main
  */
 const Index = () => {
+  // recoil
+  const { getToken, errorHandling } = useAuthentication()
+
   // states
   const [requests, setRequests] = useState<RequestShow[]>([])
 
@@ -19,12 +23,7 @@ const Index = () => {
    */
   const getRequests = async () => {
     try {
-      const token = localStorage.getItem('@token')
-
-      if (!token) {
-        console.error('Tokenが存在しません。')
-        return
-      }
+      const token = getToken()
 
       const res = await apiClient.user
         ._userId('siKgxnMy0YgQc6Gk7leRYnAU7xc2')
@@ -33,7 +32,7 @@ const Index = () => {
       console.log(res)
       setRequests(res.body.requests)
     } catch (err) {
-      console.log(err.response)
+      errorHandling(err)
     }
   }
 
@@ -42,12 +41,7 @@ const Index = () => {
    */
   const updateRequest = async (userId: string) => {
     try {
-      const token = localStorage.getItem('@token')
-
-      if (!token) {
-        console.error('Tokenが存在しません。')
-        return
-      }
+      const token = getToken()
 
       const resUser = await apiClient.user
         ._userId(userId)
@@ -55,7 +49,7 @@ const Index = () => {
 
       console.log(resUser)
     } catch (err) {
-      console.log(err)
+      errorHandling(err)
     }
   }
 

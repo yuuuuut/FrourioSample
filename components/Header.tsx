@@ -1,203 +1,130 @@
-import React, { Fragment } from 'react'
-
-import { Disclosure, Menu, Transition } from '@headlessui/react'
-import { BellIcon, MenuIcon, XIcon } from '@heroicons/react/outline'
+import React, { Fragment, useState } from 'react'
 import Link from 'next/link'
 
-/**
- * Tailwind Setting
- */
-const navigation = ['友達一覧', '友達検索', '友達申請']
-const profile = ['Your Profile', 'Settings', 'Sign out']
+import { useAuthentication } from '~/utils/authentication'
 
-function classNames(...classes: string[]) {
-  return classes.filter(Boolean).join(' ')
-}
+import { Popover, Transition } from '@headlessui/react'
+import { MenuIcon, XIcon } from '@heroicons/react/outline'
+import HeaderNavigation from './HeaderNavigation'
 
 /**
  * Main
  */
 export default function Header() {
+  // Recoil
+  const { user, login, logout } = useAuthentication()
+
+  const [isOpen, setIsOpen] = useState(false)
+
+  const responsiveLogoutButton = () => {
+    setIsOpen(false)
+    logout()
+  }
+
   return (
-    <Disclosure as="nav" className="bg-gray-800">
-      {({ open }) => (
-        <>
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between h-16">
-              <div className="flex items-center">
-                <div className="flex-shrink-0">
-                  <img
-                    className="h-8 w-8"
-                    src="https://tailwindui.com/img/logos/workflow-mark-indigo-500.svg"
-                    alt="Workflow"
-                  />
-                </div>
-                <div className="hidden md:block">
-                  <div className="ml-10 flex items-baseline space-x-4">
-                    {navigation.map((item, itemIdx) => (
-                      <div key={item}>
-                        {itemIdx === 0 && (
-                          <div
-                            key={item}
-                            className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
-                          >
-                            <Link href="/users/siKgxnMy0YgQc6Gk7leRYnAU7xc2/relationships">
-                              {item}
-                            </Link>
-                          </div>
-                        )}
-                        {itemIdx === 1 && (
-                          <div
-                            key={item}
-                            className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
-                          >
-                            <Link href="/users">{item}</Link>
-                          </div>
-                        )}
-                        {itemIdx === 2 && (
-                          <div
-                            key={item}
-                            className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
-                          >
-                            <Link href="/users/siKgxnMy0YgQc6Gk7leRYnAU7xc2/requests">
-                              {item}
-                            </Link>
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-              <div className="hidden md:block">
-                <div className="ml-4 flex items-center md:ml-6">
-                  <button className="bg-gray-800 p-1 rounded-full text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
-                    <span className="sr-only">View notifications</span>
-                    <BellIcon className="h-6 w-6" aria-hidden="true" />
-                  </button>
-
-                  <Menu as="div" className="ml-3 relative">
-                    {({ open }) => (
-                      <>
-                        <div>
-                          <Menu.Button className="max-w-xs bg-gray-800 rounded-full flex items-center text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
-                            <span className="sr-only">Open user menu</span>
-                            <img
-                              className="h-8 w-8 rounded-full"
-                              src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                              alt=""
-                            />
-                          </Menu.Button>
-                        </div>
-                        <Transition
-                          show={open}
-                          as={Fragment}
-                          enter="transition ease-out duration-100"
-                          enterFrom="transform opacity-0 scale-95"
-                          enterTo="transform opacity-100 scale-100"
-                          leave="transition ease-in duration-75"
-                          leaveFrom="transform opacity-100 scale-100"
-                          leaveTo="transform opacity-0 scale-95"
-                        >
-                          <Menu.Items
-                            static
-                            className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none"
-                          >
-                            {profile.map((item) => (
-                              <Menu.Item key={item}>
-                                {({ active }) => (
-                                  <a
-                                    href="#"
-                                    className={classNames(
-                                      active ? 'bg-gray-100' : '',
-                                      'block px-4 py-2 text-sm text-gray-700'
-                                    )}
-                                  >
-                                    {item}
-                                  </a>
-                                )}
-                              </Menu.Item>
-                            ))}
-                          </Menu.Items>
-                        </Transition>
-                      </>
-                    )}
-                  </Menu>
-                </div>
-              </div>
-              <div className="-mr-2 flex md:hidden">
-                <Disclosure.Button className="bg-gray-800 inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
-                  <span className="sr-only">Open main menu</span>
-                  {open ? (
-                    <XIcon className="block h-6 w-6" aria-hidden="true" />
-                  ) : (
-                    <MenuIcon className="block h-6 w-6" aria-hidden="true" />
-                  )}
-                </Disclosure.Button>
-              </div>
+    <Popover className="relative bg-white">
+      <>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <div className="flex justify-between items-center border-b-2 border-gray-100 py-6 md:justify-start md:space-x-10">
+            <div className="flex justify-start lg:w-0 lg:flex-1">
+              <Link href={'/'}>
+                <img
+                  className="h-8 w-auto sm:h-10"
+                  src="https://tailwindui.com/img/logos/workflow-mark-indigo-600.svg"
+                  alt=""
+                />
+              </Link>
             </div>
+            {user ? (
+              <>
+                <div className="-mr-2 -my-2 md:hidden">
+                  <Popover.Button className="bg-white rounded-md p-2 inline-flex items-center justify-center text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500">
+                    <MenuIcon
+                      onClick={() => setIsOpen(true)}
+                      className="h-6 w-6"
+                      aria-hidden="true"
+                    />
+                  </Popover.Button>
+                </div>
+
+                <Popover.Group as="nav" className="hidden md:flex space-x-10">
+                  <HeaderNavigation user={user} />
+                </Popover.Group>
+
+                <div className="hidden md:flex items-center justify-end md:flex-1 lg:w-0">
+                  <a
+                    onClick={logout}
+                    className="ml-8 whitespace-nowrap inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700"
+                  >
+                    ログアウト
+                  </a>
+                </div>
+              </>
+            ) : (
+              <div className="md:flex items-center justify-end md:flex-1 lg:w-0">
+                <a
+                  onClick={login}
+                  className="ml-8 whitespace-nowrap inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700"
+                >
+                  ログイン
+                </a>
+              </div>
+            )}
           </div>
+        </div>
 
-          <Disclosure.Panel className="md:hidden">
-            <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-              {navigation.map((item, itemIdx) =>
-                itemIdx === 0 ? (
-                  <Fragment key={item}>
-                    <a
-                      href="#"
-                      className="bg-gray-900 text-white block px-3 py-2 rounded-md text-base font-medium"
+        {user && (
+          <Transition
+            show={isOpen}
+            as={Fragment}
+            enter="duration-200 ease-out"
+            enterFrom="opacity-0 scale-95"
+            enterTo="opacity-100 scale-100"
+            leave="duration-100 ease-in"
+            leaveFrom="opacity-100 scale-100"
+            leaveTo="opacity-0 scale-95"
+          >
+            <Popover.Panel
+              focus
+              static
+              className="absolute top-0 inset-x-0 p-2 transition transform origin-top-right md:hidden"
+            >
+              <div className="rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 bg-white divide-y-2 divide-gray-50">
+                <div className="pt-5 pb-6 px-5">
+                  <div className="flex items-center justify-end">
+                    <div className="-mr-2">
+                      <Popover.Button className="bg-white rounded-md p-2 inline-flex items-center justify-center text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500">
+                        <span className="sr-only">Close menu</span>
+                        <XIcon
+                          onClick={() => setIsOpen(false)}
+                          className="h-6 w-6"
+                          aria-hidden="true"
+                        />
+                      </Popover.Button>
+                    </div>
+                  </div>
+                  <div className="mt-6">
+                    <nav
+                      className="grid gap-y-8"
+                      onClick={() => setIsOpen(false)}
                     >
-                      {item}
-                    </a>
-                  </Fragment>
-                ) : (
-                  <a
-                    key={item}
-                    href="#"
-                    className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
-                  >
-                    {item}
-                  </a>
-                )
-              )}
-            </div>
-            <div className="pt-4 pb-3 border-t border-gray-700">
-              <div className="flex items-center px-5">
-                <div className="flex-shrink-0">
-                  <img
-                    className="h-10 w-10 rounded-full"
-                    src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt=""
-                  />
-                </div>
-                <div className="ml-3">
-                  <div className="text-base font-medium leading-none text-white">
-                    Tom Cook
-                  </div>
-                  <div className="text-sm font-medium leading-none text-gray-400">
-                    tom@example.com
+                      <HeaderNavigation user={user} />
+                    </nav>
                   </div>
                 </div>
-                <button className="ml-auto bg-gray-800 flex-shrink-0 p-1 rounded-full text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
-                  <span className="sr-only">View notifications</span>
-                  <BellIcon className="h-6 w-6" aria-hidden="true" />
-                </button>
-              </div>
-              <div className="mt-3 px-2 space-y-1">
-                {profile.map((item) => (
+                <div className="py-6 px-5 space-y-6">
                   <a
-                    key={item}
-                    href="#"
-                    className="block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700"
+                    onClick={responsiveLogoutButton}
+                    className="w-full flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700"
                   >
-                    {item}
+                    ログアウト
                   </a>
-                ))}
+                </div>
               </div>
-            </div>
-          </Disclosure.Panel>
-        </>
-      )}
-    </Disclosure>
+            </Popover.Panel>
+          </Transition>
+        )}
+      </>
+    </Popover>
   )
 }

@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/dist/client/router'
 
+import { useAuthentication } from '~/utils/authentication'
 import { apiClient } from '~/utils/apiClient'
 
-import type { User } from '$prisma/client'
-
+import UserCardSkeleton from '~/components/users/UserCardSkeleton'
 import UserCard from '~/components/users/UserCard'
 import NotData from '~/components/uis/NotData'
+
+import type { User } from '$prisma/client'
 
 /**
  * Main
@@ -16,20 +18,19 @@ const Index = () => {
   const router = useRouter()
   const id = router.query.id as string
 
+  // recoil
+  const { getToken, errorHandling } = useAuthentication()
+
   // states
   const [users, setUsers] = useState<User[]>([])
+  const [loading, setLoading] = useState(true)
 
   /**
    * Relationshipの配列を取得します。
    */
   const getRelationships = async () => {
     try {
-      const token = localStorage.getItem('@token')
-
-      if (!token) {
-        console.error('Tokenが存在しません。')
-        return
-      }
+      const token = getToken()
 
       const res = await apiClient.user
         ._userId(id)
@@ -38,8 +39,9 @@ const Index = () => {
       console.log(res)
 
       setUsers(res.body.users)
+      setLoading(false)
     } catch (err) {
-      console.log(err)
+      errorHandling(err)
     }
   }
 
@@ -49,7 +51,9 @@ const Index = () => {
 
   return (
     <>
-      {users.length !== 0 ? (
+      {loading ? (
+        <UserCardSkeleton />
+      ) : users.length !== 0 ? (
         users.map((user) => (
           <div key={user.id}>
             <UserCard user={user} types={{ type: 'FRIEND' }} />

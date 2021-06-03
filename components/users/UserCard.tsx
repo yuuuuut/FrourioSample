@@ -8,6 +8,7 @@ const defaultIconImageURL = `https://firebasestorage.googleapis.com/v0/b/${proce
  */
 type Props = {
   user: UserShow
+
   types:
     | {
         type: 'REQUEST'
