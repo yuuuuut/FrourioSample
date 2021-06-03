@@ -7,6 +7,7 @@ import type { User } from '$prisma/client'
 
 import UserCard from '~/components/users/UserCard'
 import NotData from '~/components/uis/NotData'
+import UserCardSkeleton from '~/components/users/UserCardSkeleton'
 
 /**
  * Main
@@ -18,6 +19,7 @@ const Index = () => {
 
   // states
   const [users, setUsers] = useState<User[]>([])
+  const [loading, setLoading] = useState(true)
 
   /**
    * Relationshipの配列を取得します。
@@ -38,6 +40,7 @@ const Index = () => {
       console.log(res)
 
       setUsers(res.body.users)
+      setLoading(false)
     } catch (err) {
       console.log(err)
     }
@@ -49,7 +52,9 @@ const Index = () => {
 
   return (
     <>
-      {users.length !== 0 ? (
+      {loading ? (
+        <UserCardSkeleton />
+      ) : users.length !== 0 ? (
         users.map((user) => (
           <div key={user.id}>
             <UserCard user={user} types={{ type: 'FRIEND' }} />

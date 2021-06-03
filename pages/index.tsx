@@ -3,17 +3,12 @@ import { useCallback, useState } from 'react'
 import styles from '~/styles/Home.module.css'
 import { apiClient } from '~/utils/apiClient'
 
-import firebase from '~/utils/firebase'
-
 import type { FormEvent, ChangeEvent } from 'react'
 
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
-import { useRouter } from 'next/dist/client/router'
 
 const Home = () => {
-  const router = useRouter()
-
   const [title, setTitle] = useState('')
   const [startDate, setStartDate] = useState<Date | null>(new Date())
 
@@ -21,54 +16,6 @@ const Home = () => {
     (e: ChangeEvent<HTMLInputElement>) => setTitle(e.target.value),
     []
   )
-
-  /**
-   * Google Login
-   */
-  const login = useCallback(async () => {
-    const provider = new firebase.auth.GoogleAuthProvider()
-
-    try {
-      const data = await firebase.auth().signInWithPopup(provider)
-
-      const token = await firebase.auth().currentUser?.getIdToken(true)
-      console.log(token)
-      if (token) {
-        localStorage.setItem('@token', token)
-      }
-
-      if (!data.user) {
-        console.log('none user data')
-        return
-      }
-
-      const body = {
-        id: data.user.uid,
-        displayName: data.user.displayName || '',
-        photoUrl: data.user.photoURL || ''
-      }
-
-      const user = await apiClient.user.post({ body })
-      console.log(user)
-
-      router.push(`/users/${user.body.user.id}`)
-    } catch (err) {
-      console.log(err)
-    }
-  }, [])
-
-  /**
-   * GoogleAuth SignOut
-   */
-  const logout = useCallback(async () => {
-    firebase
-      .auth()
-      .signOut()
-      .then(() => {
-        console.log('Logout')
-        localStorage.removeItem('@token')
-      })
-  }, [])
 
   const createTodo = useCallback(
     async (e: FormEvent) => {
@@ -111,9 +58,6 @@ const Home = () => {
 
       <main className={styles.main}>
         <p className={styles.description}>frourio-todo-app</p>
-
-        <button onClick={login}>Login</button>
-        <button onClick={logout}>Logout</button>
 
         <div>
           <h2>Todo Create</h2>
