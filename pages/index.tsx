@@ -1,6 +1,5 @@
 import Head from 'next/head'
-import { useCallback, useState } from 'react'
-import styles from '~/styles/Home.module.css'
+import { useCallback, useEffect, useState } from 'react'
 import { apiClient } from '~/utils/apiClient'
 
 import type { FormEvent, ChangeEvent } from 'react'
@@ -11,6 +10,7 @@ import 'react-datepicker/dist/react-datepicker.css'
 const Home = () => {
   const [title, setTitle] = useState('')
   const [startDate, setStartDate] = useState<Date | null>(new Date())
+  const [flashMessage, setFlashMessage] = useState('')
 
   const inputTitle = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => setTitle(e.target.value),
@@ -33,6 +33,22 @@ const Home = () => {
     [title, startDate]
   )
 
+  const flash403 = () => {
+    const message = localStorage.getItem('flash-403')
+    if (!message) return
+
+    setFlashMessage(message)
+
+    setTimeout(() => {
+      setFlashMessage('')
+    }, 3000)
+
+    localStorage.removeItem('flash-403')
+  }
+
+  useEffect(() => {
+    flash403()
+  }, [])
   /*
   const toggleDone = useCallback(async (task: Task) => {
     await apiClient.tasks._taskId(task.id).patch({ body: { done: !task.done } })
@@ -50,15 +66,14 @@ const Home = () => {
   */
 
   return (
-    <div className={styles.container}>
+    <div>
       <Head>
         <title>frourio-todo-app</title>
         <link rel="icon" href="/favicon.png" />
       </Head>
 
-      <main className={styles.main}>
-        <p className={styles.description}>frourio-todo-app</p>
-
+      <main>
+        {flashMessage !== '' && <h3>{flashMessage}</h3>}
         <div>
           <h2>Todo Create</h2>
           <form onSubmit={createTodo}>

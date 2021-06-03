@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/dist/client/router'
 
+import { useAuthentication } from '~/utils/authentication'
 import { apiClient } from '~/utils/apiClient'
 
-import type { User } from '$prisma/client'
-
+import UserCardSkeleton from '~/components/users/UserCardSkeleton'
 import UserCard from '~/components/users/UserCard'
 import NotData from '~/components/uis/NotData'
-import UserCardSkeleton from '~/components/users/UserCardSkeleton'
+
+import type { User } from '$prisma/client'
 
 /**
  * Main
@@ -16,6 +17,9 @@ const Index = () => {
   // router
   const router = useRouter()
   const id = router.query.id as string
+
+  // recoil
+  const { getToken, errorHandling } = useAuthentication()
 
   // states
   const [users, setUsers] = useState<User[]>([])
@@ -26,12 +30,7 @@ const Index = () => {
    */
   const getRelationships = async () => {
     try {
-      const token = localStorage.getItem('@token')
-
-      if (!token) {
-        console.error('Tokenが存在しません。')
-        return
-      }
+      const token = getToken()
 
       const res = await apiClient.user
         ._userId(id)
@@ -42,7 +41,7 @@ const Index = () => {
       setUsers(res.body.users)
       setLoading(false)
     } catch (err) {
-      console.log(err)
+      errorHandling(err)
     }
   }
 

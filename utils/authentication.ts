@@ -2,9 +2,10 @@ import { useCallback, useEffect } from 'react'
 import { useRouter } from 'next/dist/client/router'
 
 import { atom, useRecoilState } from 'recoil'
-import firebase from '~/utils/firebase'
 
 import { apiClient } from './apiClient'
+
+import firebase from '~/utils/firebase'
 
 /**
  * Types
@@ -27,8 +28,10 @@ const userState = atom<User | null>({
  * Main
  */
 export function useAuthentication() {
+  // router
   const router = useRouter()
 
+  // state
   const [user, setUser] = useRecoilState(userState)
 
   /**
@@ -82,6 +85,38 @@ export function useAuthentication() {
       })
   }, [])
 
+  /**
+   * Tokenを取得します。
+   */
+  const getToken = () => {
+    const token = localStorage.getItem('@token')
+
+    if (!token) {
+      throw Object.assign(new Error('Tokenが存在しません。'), {
+        response: { status: 403 }
+      })
+    }
+
+    return token
+  }
+
+  /**
+   * Error Handling
+   */
+  const errorHandling = (err: any) => {
+    if (err.response) {
+      if (err.response.status === 403) {
+        localStorage.setItem('flash-403', 'ログインが必要です。')
+        logout()
+      }
+    } else {
+      console.log(err)
+    }
+  }
+
+  /**
+   *
+   */
   useEffect(() => {
     if (user !== null) {
       return
@@ -100,5 +135,5 @@ export function useAuthentication() {
     })
   }, [])
 
-  return { user, login, logout }
+  return { user, login, logout, getToken, errorHandling }
 }
