@@ -6,6 +6,7 @@ import type { FormEvent, ChangeEvent } from 'react'
 
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
+import FlashMessage from '~/components/uis/FlashMessage'
 
 const Home = () => {
   const [title, setTitle] = useState('')
@@ -38,10 +39,9 @@ const Home = () => {
     if (!message) return
 
     setFlashMessage(message)
-
     setTimeout(() => {
       setFlashMessage('')
-    }, 3000)
+    }, 5000)
 
     localStorage.removeItem('flash-403')
   }
@@ -73,7 +73,9 @@ const Home = () => {
       </Head>
 
       <main>
-        {flashMessage !== '' && <h3>{flashMessage}</h3>}
+        <div className="mx-10 my-5">
+          {flashMessage !== '' && <FlashMessage flashMessage={flashMessage} />}
+        </div>
         <div>
           <h2>Todo Create</h2>
           <form onSubmit={createTodo}>
