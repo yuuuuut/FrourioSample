@@ -26,6 +26,9 @@ export default function HeaderNavigation(props: Props) {
       <div className="text-base font-medium text-gray-500 hover:text-gray-900">
         <Link href={`/users`}>友達検索</Link>
       </div>
+      <div className="text-base font-medium text-gray-500 hover:text-gray-900">
+        <Link href={`/users/${user.id}`}>マイページ</Link>
+      </div>
     </>
   )
 }
