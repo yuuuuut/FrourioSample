@@ -1,38 +1,10 @@
+import { useEffect, useState } from 'react'
 import Head from 'next/head'
-import { useCallback, useEffect, useState } from 'react'
-import { apiClient } from '~/utils/apiClient'
 
-import type { FormEvent, ChangeEvent } from 'react'
-
-import DatePicker from 'react-datepicker'
-import 'react-datepicker/dist/react-datepicker.css'
 import FlashMessage from '~/components/uis/FlashMessage'
 
 const Home = () => {
-  const [title, setTitle] = useState('')
-  const [startDate, setStartDate] = useState<Date | null>(new Date())
   const [flashMessage, setFlashMessage] = useState('')
-
-  const inputTitle = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => setTitle(e.target.value),
-    []
-  )
-
-  const createTodo = useCallback(
-    async (e: FormEvent) => {
-      e.preventDefault()
-
-      console.log(title)
-      console.log(startDate)
-      if (!startDate) return
-
-      const res = await apiClient.todos.post({
-        body: { title, due_date: startDate, userId: '1' }
-      })
-      console.log(res)
-    },
-    [title, startDate]
-  )
 
   const flash403 = () => {
     const message = localStorage.getItem('flash-403')
@@ -75,17 +47,6 @@ const Home = () => {
       <main>
         <div className="mx-10 my-5">
           {flashMessage !== '' && <FlashMessage flashMessage={flashMessage} />}
-        </div>
-        <div>
-          <h2>Todo Create</h2>
-          <form onSubmit={createTodo}>
-            <input value={title} type="text" onChange={inputTitle} />
-            <DatePicker
-              selected={startDate}
-              onChange={(date: Date | null) => setStartDate(date)}
-            />
-            <input type="submit" value="ADD" />
-          </form>
         </div>
       </main>
     </div>
