@@ -8,11 +8,6 @@ export type AdditionalRequest = {
 
 export default defineHooks(() => ({
   onRequest: async (req, res, next) => {
-    if (req.path === '/api/todos') {
-      next()
-      return
-    }
-
     if (!req.headers.authorization) {
       return res.status(401).json({ message: 'Tokenが存在しません。' })
     }

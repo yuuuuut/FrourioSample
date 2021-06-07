@@ -91,11 +91,7 @@ export function useAuthentication() {
   const getToken = () => {
     const token = localStorage.getItem('@token')
 
-    if (!token) {
-      throw Object.assign(new Error('Tokenが存在しません。'), {
-        response: { status: 403 }
-      })
-    }
+    if (!token) throw Object.assign(new Error(), { response: { status: 401 } })
 
     return token
   }
@@ -105,9 +101,15 @@ export function useAuthentication() {
    */
   const errorHandling = (err: any) => {
     if (err.response) {
-      if (err.response.status === 403) {
-        localStorage.setItem('flash-403', 'ログインが必要です。')
-        logout()
+      switch (err.response.status) {
+        case 401:
+          localStorage.setItem('flash', 'ログインが必要です。')
+          logout()
+          break
+        case 403:
+          localStorage.setItem('flash', '権限のないページです。')
+          router.push('/')
+          break
       }
     } else {
       console.log(err)

@@ -6,8 +6,8 @@ import FlashMessage from '~/components/uis/FlashMessage'
 const Home = () => {
   const [flashMessage, setFlashMessage] = useState('')
 
-  const flash403 = () => {
-    const message = localStorage.getItem('flash-403')
+  const flash = () => {
+    const message = localStorage.getItem('flash')
     if (!message) return
 
     setFlashMessage(message)
@@ -15,11 +15,11 @@ const Home = () => {
       setFlashMessage('')
     }, 5000)
 
-    localStorage.removeItem('flash-403')
+    localStorage.removeItem('flash')
   }
 
   useEffect(() => {
-    flash403()
+    flash()
   }, [])
   /*
   const toggleDone = useCallback(async (task: Task) => {

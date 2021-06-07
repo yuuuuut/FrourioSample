@@ -12,7 +12,7 @@ import { useAuthentication } from '~/utils/authentication'
  */
 export default function CreateTodo() {
   const today = moment().add(1, 'days').toDate()
-  const { user, errorHandling } = useAuthentication()
+  const { user, getToken, errorHandling } = useAuthentication()
 
   const [title, setTitle] = useState('')
   const [dueDate, setDueDate] = useState<Date>(today)
@@ -27,14 +27,14 @@ export default function CreateTodo() {
       try {
         e.preventDefault()
 
-        if (!user) {
-          throw Object.assign(new Error('ユーザーが存在しません。'), {
-            response: { status: 403 }
-          })
-        }
+        if (!user)
+          throw Object.assign(new Error(), { response: { status: 401 } })
+
+        const token = getToken()
 
         const res = await apiClient.todos.post({
-          body: { title, due_date: dueDate, userId: user.id }
+          body: { title, due_date: dueDate, userId: user.id },
+          headers: { authorization: token }
         })
         console.log(res)
       } catch (err) {
@@ -84,8 +84,13 @@ export default function CreateTodo() {
           </div>
           <div className="flex items-center justify-between">
             <button
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold w-full py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              className={
+                title.length === 0
+                  ? 'bg-gray-300 text-white font-bold w-full py-2 px-4 rounded focus:outline-none focus:shadow-outline'
+                  : 'bg-blue-500 hover:bg-blue-700 text-white font-bold w-full py-2 px-4 rounded focus:outline-none focus:shadow-outline'
+              }
               type="submit"
+              disabled={title.length === 0}
             >
               作成
             </button>
