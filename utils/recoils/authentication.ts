@@ -2,8 +2,8 @@ import { useCallback, useEffect } from 'react'
 import { useRouter } from 'next/dist/client/router'
 
 import { atom, useRecoilState } from 'recoil'
-
-import { apiClient } from './apiClient'
+import { apiClient } from '~/utils/apiClient'
+import { useFlash } from './flash'
 
 import firebase from '~/utils/firebase'
 
@@ -30,6 +30,8 @@ const userState = atom<User | null>({
 export function useAuthentication() {
   // router
   const router = useRouter()
+
+  const { setFlash, setFlashMessage } = useFlash()
 
   // state
   const [user, setUser] = useRecoilState(userState)
@@ -103,11 +105,13 @@ export function useAuthentication() {
     if (err.response) {
       switch (err.response.status) {
         case 401:
-          localStorage.setItem('flash', 'ログインが必要です。')
+          setFlashMessage('ログインが必要です。')
+          setFlash(true)
           logout()
           break
         case 403:
-          localStorage.setItem('flash', '権限のないページです。')
+          setFlashMessage('権限がありません。')
+          setFlash(true)
           router.push('/')
           break
       }

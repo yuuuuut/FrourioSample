@@ -1,7 +1,7 @@
 import React, { Fragment, useState } from 'react'
 import Link from 'next/link'
 
-import { useAuthentication } from '~/utils/authentication'
+import { useAuthentication } from '~/utils/recoils/authentication'
 
 import { Popover, Transition } from '@headlessui/react'
 import { MenuIcon, XIcon } from '@heroicons/react/outline'

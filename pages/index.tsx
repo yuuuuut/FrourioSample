@@ -1,30 +1,18 @@
-import { useEffect, useState } from 'react'
 import Head from 'next/head'
 
-import FlashMessage from '~/components/uis/FlashMessage'
 import TodoCreateButton from '~/components/todos/TodoCreateButton'
-import { useAuthentication } from '~/utils/authentication'
+import FlashMessage from '~/components/uis/FlashMessage'
 
+import { useAuthentication } from '~/utils/recoils/authentication'
+import { useFlash } from '~/utils/recoils/flash'
+
+/**
+ * Main
+ */
 const Home = () => {
   const { user } = useAuthentication()
+  const { flash, flashMessage } = useFlash()
 
-  const [flashMessage, setFlashMessage] = useState('')
-
-  const flash = () => {
-    const message = localStorage.getItem('flash')
-    if (!message) return
-
-    setFlashMessage(message)
-    setTimeout(() => {
-      setFlashMessage('')
-    }, 5000)
-
-    localStorage.removeItem('flash')
-  }
-
-  useEffect(() => {
-    flash()
-  }, [])
   /*
   const toggleDone = useCallback(async (task: Task) => {
     await apiClient.tasks._taskId(task.id).patch({ body: { done: !task.done } })
@@ -38,7 +26,6 @@ const Home = () => {
 
   if (error) return <div>failed to load</div>
   if (!tasks) return <div>loading...</div>
-
   */
 
   return (
@@ -50,7 +37,7 @@ const Home = () => {
 
       <main>
         <div className="mx-10 my-5">
-          {flashMessage !== '' && <FlashMessage flashMessage={flashMessage} />}
+          {flash && <FlashMessage flashMessage={flashMessage} />}
         </div>
         {user && (
           <div className="absolute bottom-8 right-8">

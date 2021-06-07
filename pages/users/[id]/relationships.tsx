@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/dist/client/router'
 
-import { useAuthentication } from '~/utils/authentication'
+import { useAuthentication } from '~/utils/recoils/authentication'
 import { apiClient } from '~/utils/apiClient'
 
 import UserCardSkeleton from '~/components/users/UserCardSkeleton'

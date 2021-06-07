@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/dist/client/router'
 
+import { useAuthentication } from '~/utils/recoils/authentication'
 import { apiClient } from '~/utils/apiClient'
 import { UserShow } from '~/server/types'
 
@@ -17,6 +18,9 @@ const Show = () => {
   // router
   const router = useRouter()
 
+  // recoil
+  const { getToken, errorHandling } = useAuthentication()
+
   // states
   const [id, setId] = useState<string>()
   const [page, setPgae] = useState(1)
@@ -29,12 +33,7 @@ const Show = () => {
    */
   const getUser = async (id: string) => {
     try {
-      const token = localStorage.getItem('@token')
-
-      if (!token) {
-        console.error('Tokenが存在しません。')
-        return
-      }
+      const token = getToken()
 
       const resUser = await apiClient.user
         ._userId(id)
@@ -42,7 +41,7 @@ const Show = () => {
 
       setUserShow(resUser.body.user)
     } catch (err) {
-      console.log(err.response)
+      errorHandling(err)
     }
   }
 
@@ -51,12 +50,7 @@ const Show = () => {
    */
   const getTodos = async (id: string) => {
     try {
-      const token = localStorage.getItem('@token')
-
-      if (!token) {
-        console.error('Tokenが存在しません。')
-        return
-      }
+      const token = getToken()
 
       const resTodos = await apiClient.user
         ._userId(id)
