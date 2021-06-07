@@ -2,8 +2,12 @@ import { useEffect, useState } from 'react'
 import Head from 'next/head'
 
 import FlashMessage from '~/components/uis/FlashMessage'
+import TodoCreateButton from '~/components/todos/TodoCreateButton'
+import { useAuthentication } from '~/utils/authentication'
 
 const Home = () => {
+  const { user } = useAuthentication()
+
   const [flashMessage, setFlashMessage] = useState('')
 
   const flash = () => {
@@ -48,6 +52,11 @@ const Home = () => {
         <div className="mx-10 my-5">
           {flashMessage !== '' && <FlashMessage flashMessage={flashMessage} />}
         </div>
+        {user && (
+          <div className="absolute bottom-8 right-8">
+            <TodoCreateButton />
+          </div>
+        )}
       </main>
     </div>
   )
