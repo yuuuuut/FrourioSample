@@ -1,6 +1,6 @@
 import Link from 'next/link'
 
-import { User } from '~/utils/authentication'
+import { User } from '~/utils/recoils/authentication'
 
 /**
  * Types

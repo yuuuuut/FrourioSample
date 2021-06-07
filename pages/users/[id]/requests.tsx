@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-import { useAuthentication } from '~/utils/authentication'
+import { useAuthentication } from '~/utils/recoils/authentication'
 import { apiClient } from '~/utils/apiClient'
 
 import UserCard from '~/components/users/UserCard'
